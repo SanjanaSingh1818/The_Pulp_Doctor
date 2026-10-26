@@ -7,6 +7,7 @@ import {
   HeartHandshake,
   HeartPulse,
   Menu,
+  MessageCircle,
   MoveUpRight,
   ScanLine,
   ShieldCheck,
@@ -15,8 +16,15 @@ import {
   Stethoscope,
   WandSparkles,
   X,
+  ArrowUp,
 } from "lucide-react";
 import { Link } from "wouter";
+
+const configuredWhatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || "919953730405").replace(/\D/g, "");
+const whatsappNumber = /^\d{8,15}$/.test(configuredWhatsappNumber) ? configuredWhatsappNumber : "";
+const whatsappUrl = whatsappNumber
+  ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hello Dr. Charu, I would like to enquire about an appointment.")}`
+  : null;
 
 export function Reveal({
   children,
@@ -165,7 +173,7 @@ export function SiteHeader() {
   return (
     <>
       <div className="topline px-5 py-2 text-center">
-        Specialist endodontic care across Delhi NCR
+        Specialist dental care across Delhi NCR
       </div>
       <header className="site-header">
         <div className="header-inner">
@@ -226,48 +234,45 @@ export function HeroSection() {
   return (
     <section className="hero px-5">
       <div className="hero-grid relative z-10 mx-auto grid min-h-[615px] max-w-[1160px] items-center gap-12 py-14 md:grid-cols-[1.12fr_.88fr]">
-        <Reveal className="fade-up">
-          <p className="eyebrow flex items-center gap-2">
-            <span className="h-px w-7 bg-[#39867f]" /> Specialist endodontic
-            care · Delhi NCR
-          </p>
-          <h1 className="serif mt-6 max-w-[730px] text-[clamp(3.5rem,7.4vw,6.4rem)] leading-[.88] tracking-[-.025em] text-[#153d50]">
-            Preserving natural teeth through{" "}
-            <em className="text-[#267d79]">expert</em> endodontic care.
-          </h1>
-          <p className="mt-7 max-w-[500px] text-lg leading-8 text-[#506c77]">
-            A thoughtful, clear approach to specialist care—rooted in careful
-            diagnosis and a conversation that starts with you.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#book" className="btn-primary">
-              Book an appointment <ArrowRight size={17} />
-            </a>
-            <Link href="/refer-a-patient" className="btn-outline">
-              Refer a patient <ArrowRight size={16} />
-            </Link>
-          </div>
-          <div className="mt-9 flex items-center gap-3 text-sm text-[#4a6973]">
-            <span className="grid h-8 w-8 place-items-center rounded-full bg-white text-[#32847c]">
-              <Check size={16} />
-            </span>
-            <span>Personalised care, clear communication</span>
-          </div>
-        </Reveal>
-        <Reveal className="relative mx-auto w-full max-w-[425px]">
+        <Reveal className="hero-portrait-wrap relative mx-auto w-full max-w-[425px] md:order-2">
           <div className="absolute -right-8 -top-7 h-32 w-32 rounded-full border border-[#9bc8c5]/70" />
           <div className="portrait-placeholder relative aspect-[.83] overflow-hidden rounded-t-[48%] rounded-b-[2rem] border-[10px] border-white/75 shadow-[0_24px_55px_rgba(31,76,83,.16)]">
             <img
               className="hero-portrait-image"
               src={`${import.meta.env.BASE_URL}drcharu.jpeg`}
               alt="Dr Charu Makhija"
+              fetchPriority="high"
             />
           </div>
-          <div className="absolute -bottom-5 -left-10 rounded-2xl border border-[#d9e8e7] bg-white px-5 py-4 shadow-lg">
+          <div className="hero-experience absolute -bottom-5 -left-4 rounded-2xl border border-[#d9e8e7] bg-white px-5 py-4 shadow-lg sm:-left-10">
             <div className="serif text-3xl text-[#1c6570]">15+</div>
             <div className="text-[.68rem] font-semibold uppercase tracking-wider text-[#627a81]">
               years of experience
             </div>
+          </div>
+        </Reveal>
+        <Reveal className="fade-up md:order-1">
+          <p className="eyebrow flex items-center gap-2">
+            <span className="h-px w-7 bg-[#39867f]" /> Specialist dental care · Delhi NCR
+          </p>
+          <h1 className="serif mt-6 max-w-[730px] text-[clamp(3.5rem,7.4vw,6.4rem)] leading-[.88] tracking-[-.025em] text-[#153d50]">
+            Dr. Charu <em className="text-[#267d79]">Makhija</em>
+          </h1>
+          <p className="mt-7 max-w-[500px] text-lg leading-8 text-[#506c77]">
+            Restorative Dentist &amp; Root Canal Specialist<br />
+            <span className="text-base font-semibold text-[#267d79]">15+ Years of Clinical Experience · Clinician · Educator</span>
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a href="#book" className="btn-primary">
+              Book an Appointment <ArrowRight size={17} />
+            </a>
+            {whatsappUrl ? <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn-outline">Consult Online <MessageCircle size={16} /></a> : <a href="#contact" className="btn-outline">Make an enquiry <ArrowRight size={16} /></a>}
+          </div>
+          <div className="mt-9 flex items-center gap-3 text-sm text-[#4a6973]">
+            <span className="grid h-8 w-8 place-items-center rounded-full bg-white text-[#32847c]">
+              <Check size={16} />
+            </span>
+            <span>Personalised care, clear communication</span>
           </div>
         </Reveal>
       </div>
@@ -365,310 +370,88 @@ export function AboutSection() {
 
 const services = [
   {
+    name: "Root Canal Treatment",
+    description: "Help for tooth pain, infection, and damaged teeth while preserving the natural tooth where possible.",
+    image: "/root.png",
+  },
+  {
     name: "Dental Implants",
-    description:
-      "Options for replacing missing teeth and restoring everyday oral function.",
-    image:
-      "https://static.vecteezy.com/system/resources/previews/047/427/120/non_2x/dental-implant-icon-set-isolated-on-white-background-vector.jpg",
+    description: "Options for replacing missing teeth.",
+    image: "/dentalimp.png",
   },
   {
-    name: "Braces and Teeth Aligners",
-    description:
-      "Orthodontic options, including clear aligners, to improve tooth alignment.",
-    image:
-      "https://static.vecteezy.com/system/resources/thumbnails/066/883/948/small/illustration-of-a-smiling-mouth-with-teeth-fitted-with-braces-orthodontic-treatment-for-dental-alignment-and-improved-oral-health-and-aesthetics-vector.jpg",
+    name: "Veneers & Crowns",
+    description: "Restoring the appearance, shape, or strength of teeth.",
+    image: "/veneer.png",
   },
   {
-    name: "Veneers and Crowns",
-    description:
-      "Restorative options for selected tooth damage, shape, and appearance concerns.",
-    image:
-      "https://static.vecteezy.com/system/resources/previews/007/215/311/non_2x/veneer-linear-icon-thin-line-illustration-dental-crown-contour-symbol-isolated-outline-drawing-vector.jpg",
-  },
-  {
-    name: "Smile Design",
-    description:
-      "Personalised options for improving smile appearance and overall aesthetics.",
-    image:
-      "https://static.vecteezy.com/system/resources/previews/066/884/002/non_2x/smiling-mouth-with-teeth-illustration-black-and-white-line-art-drawing-of-a-happy-smile-dental-health-and-hygiene-concept-design-element-vector.jpg",
-  },
-  {
-    name: "Dentures and Bridges",
-    description:
-      "Options for replacing missing teeth based on individual dental needs.",
-    image:
-      "https://static.vecteezy.com/system/resources/previews/020/271/283/non_2x/dental-bridge-line-icon-orthodontic-teeth-implant-linear-pictogram-oral-care-stomatology-prosthesis-dentistry-outline-symbol-dental-treatment-sign-editable-stroke-isolated-illustration-vector.jpg",
+    name: "Smile Designing",
+    description: "Personalised options for improving smile aesthetics.",
+    image: "/smiling.png",
   },
   {
     name: "Teeth Cleaning",
-    description:
-      "Professional cleaning to help manage plaque, tartar, and gum health.",
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfYs-dQW4ZnC8RptE2Dt9kQgezFtHqdBX4E-zygAJ2eQ&s=10",
+    description: "Professional removal of plaque and tartar.",
+    image: "/teethcleaning.png",
   },
   {
     name: "Teeth Whitening",
-    description:
-      "Discuss suitable whitening options for discoloured or stained teeth.",
-    image:
-      "https://png.pngtree.com/png-vector/20220518/ourmid/pngtree-tooth-clean-line-icon-care-cartoon-flat-vector-png-image_46134552.jpg",
-  },
-  {
-    name: "Laser Dentistry",
-    description:
-      "Laser-assisted procedures where appropriate for the clinical indication.",
-    image: "https://candcdental.com/wp-content/uploads/2024/10/2679899.webp",
+    description: "Options for improving tooth discolouration.",
+    image: "/teethwhite.svg",
   },
   {
     name: "Oral Surgery",
-    description:
-      "Assessment and surgical care for selected oral and dental conditions.",
-    image:
-      "https://www.shutterstock.com/image-vector/maxillofacial-surgeon-outline-icon-vector-260nw-2519836419.jpg",
-  },
-  {
-    name: "Paediatric Dentistry",
-    description:
-      "Dental assessment and care tailored to children's oral health needs.",
-    image:
-      "https://www.shutterstock.com/image-vector/vector-line-icon-pediatric-dentistry-260nw-2669071519.jpg",
+    description: "Surgical dental treatment when clinically indicated.",
+    image: "/oral.png",
   },
 ];
 
-const styles: Record<string, React.CSSProperties> = {
-  grid: {
-    display: "grid",
-    gap: "24px",
-    marginTop: "42px",
-  },
-  card: {
-    overflow: "hidden",
-    border: "1px solid #e1e9e9",
-    borderRadius: "18px",
-    background: "#fff",
-    boxShadow: "0 4px 16px rgba(23,63,81,0.04)",
-    transition: "transform 280ms ease, box-shadow 280ms ease",
-  },
-  image: {
-    display: "block",
-    width: "100%",
-    height: "210px",
-    objectFit: "cover",
-  },
-  content: {
-    padding: "22px",
-  },
-  title: {
-    color: "#173f51",
-    fontSize: "19px",
-    fontWeight: 600,
-    lineHeight: 1.4,
-    margin: 0,
-  },
-  description: {
-    marginTop: "10px",
-    color: "#5a737b",
-    fontSize: "14px",
-    lineHeight: 1.8,
-  },
-};
-
 export function TreatmentsSection() {
   return (
-    <section
-      id="care"
-      style={{
-        padding: "90px 4%",
-        background: "#ebf5f5",
-      }}
-    >
-      <div style={{ maxWidth: "1500px", margin: "0 auto" }}>
+    <section id="care" className="treatments-reference-section">
+      <div className="treatments-reference-inner">
         <Reveal>
-          <div
-            style={{
-              marginBottom: "34px",
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "space-between",
-              gap: "24px",
-              flexWrap: "wrap",
-            }}
-          >
+          <div className="treatments-reference-heading">
             <div>
-              <p
-                style={{
-                  color: "#347e83",
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  letterSpacing: "2px",
-                  marginBottom: "12px",
-                }}
-              >
-                SPECIALIST ENDODONTIC CARE
-              </p>
-
-              <h2
-                className="treatments-section-title"
-                style={{
-                  color: "#102d44",
-                  fontFamily: "var(--app-font-serif)",
-                  fontSize: "clamp(2.6rem, 5vw, 4.3rem)",
-                  fontWeight: 300,
-                  lineHeight: 0.86,
-                  letterSpacing: "-.035em",
-                  margin: 0,
-                }}
-              >
-                Treatments &amp; Services
-              </h2>
+              <p>CARE FOR YOUR SMILE</p>
+              <h2 className="serif">Treatments &amp; Services</h2>
             </div>
-
-            <p
-              style={{
-                maxWidth: "420px",
-                color: "#45596b",
-                fontSize: "16px",
-                lineHeight: 1.7,
-                margin: 0,
-              }}
-            >
-              Personalised dental care guided by careful diagnosis, clinical
-              expertise, and a focus on preserving natural teeth.
-            </p>
+            <p>Gentle, personalised dental care to help preserve your natural teeth.</p>
           </div>
         </Reveal>
-
         <div className="treatment-reference-grid">
           {services.map(({ name, description, image }, index) => (
             <Reveal key={name} delay={(index % 3) * 50}>
-              <a
-                href="#book"
-                aria-label={`Discuss ${name} at an appointment`}
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: "16px",
-                  height: "100%",
-                  minWidth: 0,
-                  boxSizing: "border-box",
-                  padding: "16px",
-                  background: "#fff",
-                  border: "1px solid rgba(23, 63, 81, 0.06)",
-                  borderRadius: "17px",
-                  boxShadow: "0 2px 8px rgba(23,63,81,0.025)",
-                  textDecoration: "none",
-                  color: "inherit",
-                  transition:
-                    "transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease",
-                }}
-                onMouseEnter={(event) => {
-                  event.currentTarget.style.transform = "translateY(-3px)";
-                  event.currentTarget.style.borderColor = "#8bbdb7";
-                  event.currentTarget.style.boxShadow =
-                    "0 10px 26px rgba(23,63,81,0.09)";
-                }}
-                onMouseLeave={(event) => {
-                  event.currentTarget.style.transform = "translateY(0)";
-                  event.currentTarget.style.borderColor = "rgba(23,63,81,0.06)";
-                  event.currentTarget.style.boxShadow =
-                    "0 2px 8px rgba(23,63,81,0.025)";
-                }}
-              >
-                <img
-                  src={image}
-                  alt={name}
-                  loading="lazy"
-                  style={{
-                    width: "132px",
-                    height: "104px",
-                    flexShrink: 0,
-                    objectFit: "cover",
-                    borderRadius: "13px",
-                    background: "#e9f2f2",
-                  }}
-                />
-
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <h3
-                    style={{
-                      color: "#12385b",
-                      fontSize: "19px",
-                      fontWeight: 700,
-                      lineHeight: 1.35,
-                      margin: "1px 0 9px",
-                    }}
-                  >
-                    {name}
-                  </h3>
-
-                  <p
-                    style={{
-                      color: "#40536b",
-                      fontSize: "15px",
-                      lineHeight: 1.65,
-                      margin: 0,
-                    }}
-                  >
-                    {description}
-                  </p>
-                </div>
+              <a href="#book" className="treatment-reference-card" aria-label={`Discuss ${name} at an appointment`}>
+                <img src={image} alt="" loading="lazy" />
+                <div><h3>{name}</h3><p>{description}</p></div>
               </a>
             </Reveal>
           ))}
         </div>
-
-        <style>
-          {`
-            .treatment-reference-grid {
-              display: grid;
-              grid-template-columns: repeat(3, minmax(0, 1fr));
-              gap: 20px;
-              align-items: stretch;
-            }
-
-            @media (max-width: 1050px) {
-              .treatment-reference-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 16px;
-              }
-            }
-
-            @media (max-width: 650px) {
-              .treatment-reference-grid {
-                grid-template-columns: 1fr;
-                gap: 13px;
-              }
-
-              .treatment-reference-grid a {
-                gap: 12px !important;
-                padding: 12px !important;
-              }
-
-              .treatment-reference-grid img {
-                width: 94px !important;
-                height: 88px !important;
-              }
-
-              .treatment-reference-grid h3 {
-                font-size: 16px !important;
-              }
-
-              .treatment-reference-grid p {
-                font-size: 13px !important;
-                line-height: 1.5 !important;
-              }
-            }
-
-            @media (prefers-reduced-motion: reduce) {
-              .treatment-reference-grid a {
-                transition: none !important;
-              }
-            }
-          `}
-        </style>
       </div>
     </section>
   );
+}
+
+export function PublicUtilityControls() {
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  useEffect(() => {
+    const updateVisibility = () => setShowBackToTop(window.scrollY > 480);
+    updateVisibility();
+    window.addEventListener("scroll", updateVisibility, { passive: true });
+    return () => window.removeEventListener("scroll", updateVisibility);
+  }, []);
+  return <div className="public-utilities">
+    {showBackToTop && <button type="button" className="back-to-top" aria-label="Back to top" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })}><ArrowUp size={19} aria-hidden="true" /><span>Top</span></button>}
+    {whatsappUrl && <a className="whatsapp-float" href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="Chat with The Pulp Doctor on WhatsApp"><MessageCircle size={24} aria-hidden="true" /><span>Chat on WhatsApp</span></a>}
+  </div>;
+}
+
+export function EnquiryLink({ className = "btn-outline" }: { className?: string }) {
+  return whatsappUrl
+    ? <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className={className}>Enquire on WhatsApp <MessageCircle size={16} /></a>
+    : <a href="#contact" className={className}>Send an enquiry <ArrowRight size={16} /></a>;
 }
 
 export function DentistReferralSection() {
@@ -705,8 +488,6 @@ export function DentistReferralSection() {
   );
 }
 
-
-
 export function SiteFooter() {
   return (
     <footer className="site-footer">
@@ -725,11 +506,11 @@ export function SiteFooter() {
           </a>
 
           <p>
-            Specialist endodontic care with time to listen, explain and plan.
+            Specialist dental care with time to listen, explain and plan.
           </p>
 
           <span>
-            Dr Charu Makhija · Restorative Dentist and Endodontist
+            Dr Charu Makhija · Restorative Dentist &amp; Root Canal Specialist
           </span>
         </div>
 

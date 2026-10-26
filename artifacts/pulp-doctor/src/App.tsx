@@ -27,7 +27,7 @@ import {
   Printer, AlertCircle, ClipboardList, MoveUpRight,
 } from 'lucide-react';
 import NotFound from '@/pages/not-found';
-import { AboutSection, Brand, DentistReferralSection, HeroSection, Reveal, SiteFooter, SiteHeader, TreatmentsSection } from '@/components/landing-sections';
+import { AboutSection, Brand, DentistReferralSection, EnquiryLink, HeroSection, PublicUtilityControls, Reveal, SiteFooter, SiteHeader, TreatmentsSection } from '@/components/landing-sections';
 
 const queryClient = new QueryClient();
 const locationDisplayOrder = ['gurugram-jcm', 'model-town-delhi', 'karol-bagh-delhi'];
@@ -73,7 +73,7 @@ const fdi = [
   [48,47,46,45,44,43,42,41], [31,32,33,34,35,36,37,38],
 ];
 
-function Shell({children}:{children:React.ReactNode}) { return <div className="site-shell min-h-[100dvh]"><SiteHeader/>{children}<SiteFooter/></div>; }
+function Shell({children}:{children:React.ReactNode}) { return <div className="site-shell min-h-[100dvh]"><SiteHeader/>{children}<PublicUtilityControls/><SiteFooter/></div>; }
 
 function ContactForm() {
   const send = useCreateContactMessage();
@@ -170,6 +170,31 @@ function ContactSection() {
   return <section id="contact" className="contact-premium section-pad"><div className="contact-inner"><div><Reveal><p className="eyebrow">GET IN TOUCH</p><h2 className="serif">Start with<br/><em>a conversation.</em></h2><p className="contact-intro">Send a general practice enquiry. For appointments, select a clinic above to view live availability.</p><a className="contact-email" href="mailto:drcharu.25@gmail.com">drcharu.25@gmail.com <MoveUpRight size={16}/></a></Reveal></div><Reveal delay={100}><ContactForm/></Reveal></div></section>;
 }
 
+const experienceSteps = [
+  ['01', 'Listen carefully', 'We begin with your concerns and take time to understand what brought you in.'],
+  ['02', 'Explain clearly', 'You’ll hear what we find, what the options are, and what each step involves.'],
+  ['03', 'Plan together', 'Care is planned around your clinical needs, comfort and long-term oral health.'],
+];
+
+function ExperienceSteps() {
+  const [activeStep, setActiveStep] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const handleTouchEnd = (touchEnd: number) => {
+    if (touchStart !== null && Math.abs(touchStart - touchEnd) >= 40) {
+      setActiveStep((current) => touchStart > touchEnd ? Math.min(current + 1, experienceSteps.length - 1) : Math.max(current - 1, 0));
+    }
+    setTouchStart(null);
+  };
+  return <div className="experience-carousel" aria-roledescription="carousel" aria-label="The patient experience">
+    <div className="experience-track" style={{ transform: `translateX(-${activeStep * 100}%)` }} onTouchStart={(event) => setTouchStart(event.changedTouches[0]?.clientX ?? null)} onTouchEnd={(event) => handleTouchEnd(event.changedTouches[0]?.clientX ?? 0)}>
+      {experienceSteps.map(([number, title, body]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{body}</p></article>)}
+    </div>
+    <div className="experience-dots" role="tablist" aria-label="Experience steps">
+      {experienceSteps.map(([, title], index) => <button key={title} type="button" role="tab" aria-selected={activeStep === index} aria-label={`Show step ${index + 1}: ${title}`} className={activeStep === index ? 'is-active' : ''} onClick={() => setActiveStep(index)} />)}
+    </div>
+  </div>;
+}
+
 function HomePage() {
   const health = useHealthCheck();
   const locationsQuery = useListLocations();
@@ -178,17 +203,13 @@ function HomePage() {
     <HeroSection/>
     <AboutSection/>
     <TreatmentsSection/>
-    <section className="experience-premium section-pad"><div className="mx-auto max-w-[1160px]"><Reveal><p className="eyebrow">THE EXPERIENCE</p><h2 className="serif">Thoughtful at every step.</h2></Reveal><div className="experience-steps">{[
-      ['01','Listen carefully','We begin with your concerns and take time to understand what brought you in.'],
-      ['02','Explain clearly','You’ll hear what we find, what the options are, and what each step involves.'],
-      ['03','Plan together','Care is planned around your clinical needs, comfort and long-term oral health.'],
-    ].map(([n,title,body])=><Reveal key={n}><article><span>{n}</span><h3>{title}</h3><p>{body}</p></article></Reveal>)}</div></div></section>
+    <section className="experience-premium section-pad"><div className="mx-auto max-w-[1160px]"><Reveal><p className="eyebrow">THE EXPERIENCE</p><h2 className="serif">Thoughtful at every step.</h2></Reveal><ExperienceSteps/></div></section>
     <ClinicsSection locations={locations} loading={locationsQuery.isLoading} error={locationsQuery.isError} retry={() => locationsQuery.refetch()}/>
-    <section className="urgent-premium"><div className="urgent-inner"><div className="urgent-copy"><p className="eyebrow !text-[#9bd0c8]">URGENT CONCERN?</p><h2 className="serif">Sunday Emergency Appointments</h2><p>Sundays are reserved for emergency appointments and remain closed by default. Slots become available only when published by the doctor.</p></div><a href="#book" className="btn-outline">Check availability <ArrowRight size={16}/></a><img className="urgent-sticker" src={`${import.meta.env.BASE_URL}tooth-sticker.png`} alt="" aria-hidden="true" /></div></section>
+    <section className="urgent-premium"><div className="urgent-inner"><div className="urgent-copy"><p className="eyebrow !text-[#9bd0c8]">FLEXIBLE APPOINTMENT ENQUIRIES</p><h2 className="serif">Looking for another day?</h2><p>Can’t find a suitable appointment on the available days? Get in touch with us and we’ll help you explore the next available option.</p></div><EnquiryLink/><img className="urgent-sticker" src={`${import.meta.env.BASE_URL}tooth-sticker.png`} alt="" aria-hidden="true" /></div></section>
     <DentistReferralSection/>
     <section className="faq-premium section-pad"><div className="mx-auto max-w-[900px]"><Reveal><p className="eyebrow">A FEW HELPFUL NOTES</p><h2 className="serif">Questions, answered.</h2></Reveal><div className="faq-list">{[
       ['What should I expect at my appointment?','Your concerns and clinical needs will be discussed, and the findings and relevant options explained clearly.'],
-      ['Can I book a Sunday appointment?','Sunday is closed by default. Emergency appointments are available only when specific Sunday slots have been published.'],
+      ['What if I need another appointment day?','If the published days do not work for you, please send an enquiry. The practice can help you explore the next available option without promising availability.'],
       ['Where are appointments available?','The practice publishes appointments across Gurugram, Model Town and Karol Bagh. Select a clinic and date to see live availability.'],
       ['I am a dentist. How do I refer a patient?','Use the dedicated referral form to provide patient details, selected FDI teeth, request and restorative information. Review everything before submitting.'],
     ].map(([question,answer])=><details key={question}><summary>{question}<ChevronDown size={17}/></summary><p>{answer}</p></details>)}</div></div></section>
