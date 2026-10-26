@@ -4,11 +4,16 @@ import {
   ArrowRight,
   Baby,
   Check,
+  ChevronDown,
+  CircleDot,
+  Coffee,
   HeartHandshake,
   HeartPulse,
   Menu,
   MessageCircle,
   MoveUpRight,
+  Moon,
+  Phone,
   ScanLine,
   ShieldCheck,
   Smile,
@@ -20,11 +25,12 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 
-const configuredWhatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || "919953730405").replace(/\D/g, "");
+const configuredWhatsappNumber = (import.meta.env.VITE_WHATSAPP_NUMBER || "918448500405").replace(/\D/g, "");
 const whatsappNumber = /^\d{8,15}$/.test(configuredWhatsappNumber) ? configuredWhatsappNumber : "";
 const whatsappUrl = whatsappNumber
   ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hello Dr. Charu, I would like to enquire about an appointment.")}`
   : null;
+const callUrl = whatsappNumber ? `tel:+${whatsappNumber}` : null;
 
 export function Reveal({
   children,
@@ -155,7 +161,7 @@ export function ToothArtwork() {
 export function Brand() {
   return (
     <Link href="/" className="brand-mark" aria-label="The Pulp Doctor home">
-      <img src={`${import.meta.env.BASE_URL}logo.jpeg`} alt="The Pulp Doctor" />
+      <img src={`${import.meta.env.BASE_URL}logo.png`} alt="The Pulp Doctor" />
     </Link>
   );
 }
@@ -173,7 +179,7 @@ export function SiteHeader() {
   return (
     <>
       <div className="topline px-5 py-2 text-center">
-        Specialist dental care across Delhi NCR
+        SPECIALIST DENTAL CARE · DELHI NCR
       </div>
       <header className="site-header">
         <div className="header-inner">
@@ -252,21 +258,17 @@ export function HeroSection() {
           </div>
         </Reveal>
         <Reveal className="fade-up md:order-1">
-          <p className="eyebrow flex items-center gap-2">
-            <span className="h-px w-7 bg-[#39867f]" /> Specialist dental care · Delhi NCR
-          </p>
+          <p className="eyebrow flex items-center gap-2"><span className="h-px w-7 bg-[#39867f]" /> YOU DON&apos;T HAVE TO PUT UP WITH THE PAIN</p>
           <h1 className="serif mt-6 max-w-[730px] text-[clamp(3.5rem,7.4vw,6.4rem)] leading-[.88] tracking-[-.025em] text-[#153d50]">
-            Dr. Charu <em className="text-[#267d79]">Makhija</em>
+            Tooth pain?<br />Let&apos;s take<br /><em className="text-[#267d79]">care of you.</em>
           </h1>
-          <p className="mt-7 max-w-[500px] text-lg leading-8 text-[#506c77]">
-            Restorative Dentist &amp; Root Canal Specialist<br />
-            <span className="text-base font-semibold text-[#267d79]">15+ Years of Clinical Experience · Clinician · Educator</span>
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="hero-story-copy"><p>That lingering ache. The sip of tea that hurts. Another night of broken sleep. We know tooth pain can take over your day—and the thought of treatment can feel worrying, too.</p><p>You deserve to feel heard, understand what&apos;s happening, and find a way forward. Let&apos;s take the first step together.</p></div>
+          <div className="hero-actions mt-8 flex flex-wrap gap-3">
             <a href="#book" className="btn-primary">
               Book an Appointment <ArrowRight size={17} />
             </a>
-            {whatsappUrl ? <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn-outline">Consult Online <MessageCircle size={16} /></a> : <a href="#contact" className="btn-outline">Make an enquiry <ArrowRight size={16} /></a>}
+            {whatsappUrl ? <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn-outline">Help with my tooth pain <MessageCircle size={16} /></a> : <a href="#contact" className="btn-outline">Help with my tooth pain <ArrowRight size={16} /></a>}
+            <Link href="/refer-a-patient" className="btn-outline">Refer a patient <ArrowRight size={16} /></Link>
           </div>
           <div className="mt-9 flex items-center gap-3 text-sm text-[#4a6973]">
             <span className="grid h-8 w-8 place-items-center rounded-full bg-white text-[#32847c]">
@@ -276,33 +278,74 @@ export function HeroSection() {
           </div>
         </Reveal>
       </div>
+      <div className="story-reassurance"><span><Check size={15} /> Time to listen to your concerns</span><span><Check size={15} /> Treatment explained in simple words</span><span><Check size={15} /> Focused on saving your natural teeth</span></div>
     </section>
   );
+}
+
+const symptomCards = [
+  [Moon, "An ache that won’t settle", "A persistent or throbbing toothache that interrupts your day or keeps you awake."],
+  [Coffee, "A sip that makes you wince", "Sensitivity to hot or cold that lingers after your drink is gone."],
+  [Activity, "Discomfort when you bite", "A tender tooth that makes eating your favourite foods difficult."],
+  [CircleDot, "Swelling or a gum bump", "Swelling near a tooth, sometimes with a bad taste, needs prompt dental attention."],
+];
+
+export function SymptomsSection() {
+  const [activeSymptom, setActiveSymptom] = useState(0);
+  return <section className="story-section symptom-section section-pad"><div className="mx-auto max-w-[1200px]"><div className="story-section-heading"><div><p className="story-eyebrow">DOES THIS SOUND FAMILIAR?</p><h2 className="serif">Little moments.<br /><em>A lot of discomfort.</em></h2></div><p>You might be avoiding one side when you chew, or wondering if the pain will go away on its own. These are good reasons to have your tooth checked.</p></div><div className="symptom-carousel"><div className="symptom-grid" style={{ transform: `translateX(-${activeSymptom * 100}%)` }}>{symptomCards.map(([Icon, title, description]) => <article key={title as string}><Icon size={21} aria-hidden="true" /><h3>{title as string}</h3><p>{description as string}</p></article>)}</div><div className="symptom-dots" role="group" aria-label="Common dental concerns">{symptomCards.map(([, title], index) => <button key={title as string} type="button" aria-label={`Show concern ${index + 1}: ${title as string}`} aria-pressed={activeSymptom === index} className={activeSymptom === index ? "is-active" : ""} onClick={() => setActiveSymptom(index)} />)}</div></div><p className="story-footnote">Not every toothache needs a root canal. An examination and X-rays when needed help us find the cause.</p></div></section>;
+}
+
+export function RootCanalSection() {
+  return <section id="root-canal" className="root-canal-story section-pad"><div className="root-canal-layout"><div className="root-canal-art"><img src={`${import.meta.env.BASE_URL}tooth-sticker.png`} alt="Illustration of a natural tooth" /><span>Your natural tooth. Worth caring for.</span></div><div><p className="story-eyebrow">UNDERSTANDING ROOT CANAL TREATMENT</p><h2 className="serif">A way to ease pain.<br /><em>A chance to save<br />your tooth.</em></h2><p>Inside your tooth is soft tissue called the pulp. If it becomes badly inflamed or infected, root canal treatment may help you keep the tooth.</p><p>The damaged tissue is removed, the inside is carefully cleaned, and the canals are filled and sealed. A filling or crown then helps protect the tooth.</p><p><strong>It starts with understanding your tooth—not assuming you need treatment.</strong> Dr. Makhija will explain what she finds and discuss the options with you.</p><details><summary>What will my visit be like? <ChevronDown size={17} /></summary><p>The dentist examines your tooth and may recommend an X-ray. You&apos;ll hear the findings, discuss suitable treatment options, and have time to ask questions.</p></details></div></div></section>;
+}
+
+export function PatientJourneySection() {
+  const steps = [["01", "First, we listen.", "Tell us what hurts, what worries you, and what you&apos;re hoping for. There&apos;s room for every question—even the one you feel nervous asking."], ["02", "Then, we make it clear.", "After examining your tooth, we talk through what&apos;s happening, your treatment options, and the next steps in everyday language."], ["03", "We plan care together.", "Your comfort and long-term oral health guide the plan. You&apos;ll know what to expect during treatment and how to care for your tooth afterwards."]];
+  const [activeStep, setActiveStep] = useState(0);
+  return <section className="story-section patient-journey section-pad"><div className="mx-auto max-w-[1200px]"><p className="story-eyebrow">A LITTLE CLARITY CAN MAKE A BIG DIFFERENCE</p><h2 className="serif">You&apos;re a person.<br /><em>Not just a painful tooth.</em></h2><div className="journey-carousel"><div className="journey-track" style={{ transform: `translateX(-${activeStep * 100}%)` }}>{steps.map(([number, title, description]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{description}</p></article>)}</div><div className="journey-dots" role="tablist" aria-label="Care steps">{steps.map(([, title], index) => <button key={title} type="button" role="tab" aria-label={`Show step ${index + 1}: ${title}`} aria-selected={activeStep === index} className={activeStep === index ? "is-active" : ""} onClick={() => setActiveStep(index)} />)}</div></div><aside><HeartHandshake size={32} aria-hidden="true" /><div><strong>Nervous about the dental chair? You can tell us.</strong><p>You don&apos;t need to hide your worry or apologise for how long it&apos;s been. Let&apos;s begin with where you are today.</p></div></aside></div></section>;
+}
+
+export function WorriesSection() {
+  return <section className="worries-story section-pad"><div className="mx-auto max-w-[820px]"><p className="story-eyebrow">IT&apos;S OKAY TO HAVE QUESTIONS</p><h2 className="serif">Let&apos;s put a few<br /><em>worries at ease.</em></h2><p>Something else on your mind?</p><EnquiryLink className="worries-link" /></div></section>;
 }
 
 export function AboutSection() {
   return (
     <section id="about" className="about-premium section-pad">
-      <div className="about-index">
-        <span>01</span>
-        <i />
-      </div>
-      <div className="about-layout">
-        <Reveal className="about-heading">
-          <p className="eyebrow">THE PERSON BEHIND THE PRACTICE</p>
-          <h2 className="serif">
-            Expert hands.
-            <br />
-            <em>Human care.</em>
-          </h2>
-          <div className="doctor-credentials">
-            <strong>Dr Charu Makhija</strong>
-            <span>BDS, MDS</span>
-            <span>Restorative Dentist and Endodontist</span>
-            <span>MBA (Hospital Management)</span>
+      <div className="about-profile">
+        <Reveal className="about-profile-card">
+          <div className="about-profile-photo">
+            <img
+              src={`${import.meta.env.BASE_URL}drcharu.jpeg`}
+              alt="Dr Charu Makhija, Restorative Dentist and Endodontist"
+              loading="lazy"
+            />
+            <span className="about-experience-badge">
+              <strong>15+</strong>
+              <span>YEARS OF<br />CLINICAL EXPERIENCE</span>
+            </span>
+          </div>
+          <div className="about-profile-details">
+            <p className="about-profile-name">Dr. Charu Makhija</p>
+            <p className="about-profile-title">Restorative Dentist &amp; Root Canal Specialist</p>
+            <div className="about-profile-meta">
+              <span>Clinician</span>
+              <span aria-hidden="true">·</span>
+              <span>Educator</span>
+            </div>
+            <p className="about-profile-qualifications">
+              BDS · MDS in Conservative Dentistry and Endodontics · MBA
+            </p>
           </div>
         </Reveal>
         <Reveal className="about-copy" delay={100}>
+          <p className="eyebrow">THE PERSON BEHIND THE PRACTICE</p>
+          <h2 className="about-profile-heading serif">Thoughtful care,<br /><em>built on trust.</em></h2>
+          <blockquote className="about-approach">
+            “My approach begins with listening, understanding what is happening,
+            and explaining your options clearly so you can make an informed
+            decision about your dental care.”
+          </blockquote>
           <p>
             Dr Charu Makhija is an experienced Restorative Dentist and
             Endodontist with over 15 years of clinical experience. She is
@@ -339,39 +382,16 @@ export function AboutSection() {
           </p>
         </Reveal>
       </div>
-      <div
-        className="credential-ribbon"
-        aria-label="Professional experience and credentials"
-      >
-        <div className="credential-stat">
-          <span className="credential-index">01 / EXPERIENCE</span>
-          <strong>15+</strong>
-          <small>YEARS OF EXPERIENCE</small>
-        </div>
-        <div className="credential-stat">
-          <span className="credential-index">02 / QUALIFICATION</span>
-          <strong>BDS · MDS</strong>
-          <small>CONSERVATIVE DENTISTRY &amp; ENDODONTICS</small>
-        </div>
-        <div className="credential-stat">
-          <span className="credential-index">03 / MANAGEMENT</span>
-          <strong>MBA</strong>
-          <small>HOSPITAL MANAGEMENT</small>
-        </div>
-        <div className="credential-stat">
-          <span className="credential-index">04 / APPROACH</span>
-          <strong>TRUST</strong>
-          <small>AT THE HEART OF CARE</small>
-        </div>
-      </div>
     </section>
   );
 }
 
+
 const services = [
   {
     name: "Root Canal Treatment",
-    description: "Help for tooth pain, infection, and damaged teeth while preserving the natural tooth where possible.",
+    description:
+      "Help for tooth pain, infection, and damaged teeth while preserving the natural tooth where possible.",
     image: "/root.png",
   },
   {
@@ -416,15 +436,34 @@ export function TreatmentsSection() {
               <p>CARE FOR YOUR SMILE</p>
               <h2 className="serif">Treatments &amp; Services</h2>
             </div>
-            <p>Gentle, personalised dental care to help preserve your natural teeth.</p>
+            <p>
+              Gentle, personalised dental care to help preserve your natural
+              teeth.
+            </p>
           </div>
         </Reveal>
-        <div className="treatment-reference-grid">
+
+        <div className="treatment-reference-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {services.map(({ name, description, image }, index) => (
-            <Reveal key={name} delay={(index % 3) * 50}>
-              <a href="#book" className="treatment-reference-card" aria-label={`Discuss ${name} at an appointment`}>
+            <Reveal
+              key={name}
+              delay={(index % 3) * 50}
+              className={
+                name === "Oral Surgery"
+                  ? "lg:col-start-2"
+                  : ""
+              }
+            >
+              <a
+                href="#book"
+                className="treatment-reference-card"
+                aria-label={`Discuss ${name} at an appointment`}
+              >
                 <img src={image} alt="" loading="lazy" />
-                <div><h3>{name}</h3><p>{description}</p></div>
+                <div>
+                  <h3>{name}</h3>
+                  <p>{description}</p>
+                </div>
               </a>
             </Reveal>
           ))}
@@ -433,6 +472,7 @@ export function TreatmentsSection() {
     </section>
   );
 }
+
 
 export function PublicUtilityControls() {
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -445,6 +485,7 @@ export function PublicUtilityControls() {
   return <div className="public-utilities">
     {showBackToTop && <button type="button" className="back-to-top" aria-label="Back to top" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })}><ArrowUp size={19} aria-hidden="true" /><span>Top</span></button>}
     {whatsappUrl && <a className="whatsapp-float" href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="Chat with The Pulp Doctor on WhatsApp"><MessageCircle size={24} aria-hidden="true" /><span>Chat on WhatsApp</span></a>}
+    {callUrl && <a className="call-float" href={callUrl} aria-label="Call The Pulp Doctor"><Phone size={22} aria-hidden="true" /><span>Call us</span></a>}
   </div>;
 }
 
@@ -491,49 +532,27 @@ export function DentistReferralSection() {
 export function SiteFooter() {
   return (
     <footer className="site-footer">
-      <div className="footer-main">
-        <div className="footer-brand">
-          <a
-            href="/#top"
-            aria-label="The Pulp Doctor home"
-            className="mb-4 inline-flex items-center"
-          >
+      <div className="footer-main footer-enhanced">
+        <div className="footer-cta">
+          <a href="/" className="brand-mark footer-logo" aria-label="The Pulp Doctor home">
             <img
-              src="/footer-logo.png"
+              src={`${import.meta.env.BASE_URL}footer-logo.png`}
               alt="The Pulp Doctor"
-              className="h-auto w-36 max-w-full object-contain sm:w-44"
             />
           </a>
-
-          <p>
-            Specialist dental care with time to listen, explain and plan.
-          </p>
-
-          <span>
-            Dr Charu Makhija · Restorative Dentist &amp; Root Canal Specialist
-          </span>
+          <p className="eyebrow !text-[#8fd0c7]">ONE SMALL STEP TOWARDS FEELING BETTER</p>
+          <h2 className="serif">You don&apos;t have to<br />figure it out alone.</h2>
+          <p>Whether you&apos;re in pain or simply unsure, start with a conversation. We&apos;ll help you find the next step.</p>
+          <EnquiryLink className="footer-enquiry" />
+          <small>An enquiry is not a confirmed appointment. The team will confirm availability.</small>
         </div>
-
-        <div>
-          <p className="eyebrow !text-[#83c5ba]">EXPLORE</p>
-          <nav className="footer-links">
-            <a href="/#about">About Dr Makhija</a>
-            <a href="/#care">Treatments</a>
-            <Link href="/refer-a-patient">Refer a patient</Link>
-            <a href="/#book">Appointments</a>
-            <a href="/#locations">Clinic locations</a>
-          </nav>
-        </div>
-
-        <div>
-          <p className="eyebrow !text-[#83c5ba]">CONTACT</p>
-          <p className="footer-contact">
-            For clinic details and appointment availability, please select a
-            location below.
-          </p>
-          <Link href="/admin/login" className="admin-link">
-            Administrator sign in
-          </Link>
+        <div className="footer-details">
+          <div><p className="eyebrow !text-[#8fd0c7]">PREFER TO CALL?</p>{callUrl && <a className="footer-contact-link" href={callUrl}>+91 8448 500405 <MoveUpRight size={17} /></a>}</div>
+          <div><p className="eyebrow !text-[#8fd0c7]">OR WRITE TO US</p><a className="footer-contact-link" href="mailto:drcharu.25@gmail.com">drcharu.25@gmail.com <MoveUpRight size={17} /></a></div>
+          <p className="footer-doctor">Dr. Charu Makhija · The Pulp Doctor<br />SPECIALIST DENTAL CARE · DELHI NCR</p>
+          <nav className="footer-links" aria-label="Footer navigation"><a href="/#about">About Dr Makhija</a><a href="/#care">Treatments</a><Link href="/refer-a-patient">Refer a patient</Link><a href="/#book">Appointments</a><a href="/#locations">Clinic locations</a></nav>
+          <p className="footer-urgent"><strong>Need urgent help?</strong> Facial or neck swelling, rapidly worsening symptoms, or swelling with fever needs urgent assessment. Difficulty breathing or swallowing requires emergency medical care.</p>
+          <Link href="/admin/login" className="admin-link">Administrator sign in</Link>
         </div>
       </div>
 
