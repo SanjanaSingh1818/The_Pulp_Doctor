@@ -169,12 +169,12 @@ export function Brand() {
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const links = [
-    ["About", "/#about"],
-    ["Treatments", "/#care"],
-    ["Locations", "/#locations"],
+    ["About", "/about"],
+    ["Treatments", "/treatments"],
+    ["Locations", "/locations"],
+    ["Contact", "/contact"],
+    ["Book appointment", "/book"],
     ["For dentists", "/refer-a-patient"],
-    ["Contact", "/#contact"],
-    ["Book appointment", "/#book"],
   ];
   return (
     <>
@@ -186,24 +186,16 @@ export function SiteHeader() {
           <Brand />
           <nav className="desktop-nav" aria-label="Main navigation">
             {links.map(([label, href]) =>
-              href === "/refer-a-patient" ? (
-                <Link className="nav-link" key={label} href={href}>
-                  {label}
-                </Link>
-              ) : (
-                <a
-                  className={
-                    label === "Book appointment"
-                      ? "btn-primary !px-5 !py-2.5 text-sm"
-                      : "nav-link"
-                  }
+              <Link
+                  className={label === "Book appointment" || label === "For dentists"
+                    ? "btn-primary !px-5 !py-2.5 text-sm"
+                    : "nav-link"}
                   key={label}
                   href={href}
                 >
                   {label}
-                  {label === "Book appointment" && <ArrowRight size={15} />}
-                </a>
-              ),
+                  {(label === "Book appointment" || label === "For dentists") && <ArrowRight size={15} />}
+              </Link>
             )}
           </nav>
           <button
@@ -219,15 +211,9 @@ export function SiteHeader() {
         {open && (
           <nav className="mobile-nav" aria-label="Mobile navigation">
             {links.map(([label, href]) =>
-              href === "/refer-a-patient" ? (
                 <Link key={label} href={href} onClick={() => setOpen(false)}>
                   {label}
                 </Link>
-              ) : (
-                <a key={label} href={href} onClick={() => setOpen(false)}>
-                  {label}
-                </a>
-              ),
             )}
           </nav>
         )}
@@ -270,10 +256,10 @@ export function HeroSection() {
           </h1>
           <div className="hero-story-copy"><p>That lingering ache. The sip of tea that hurts. Another night of broken sleep. We know tooth pain can take over your day and the thought of treatment can feel worrying, too.</p><p>You deserve to feel heard, understand what&apos;s happening, and find a way forward. Let&apos;s take the first step together.</p></div>
           <div className="hero-actions mt-8 flex flex-wrap gap-3">
-            <a href="#book" className="btn-primary">
+            <Link href="/book" className="btn-primary">
               Book an Appointment <ArrowRight size={17} />
-            </a>
-            {whatsappUrl ? <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn-outline">Help with my tooth pain <MessageCircle size={16} /></a> : <a href="#contact" className="btn-outline">Help with my tooth pain <ArrowRight size={16} /></a>}
+            </Link>
+            {whatsappUrl ? <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn-outline">Help with my tooth pain <MessageCircle size={16} /></a> : <Link href="/contact" className="btn-outline">Help with my tooth pain <ArrowRight size={16} /></Link>}
             <Link href="/refer-a-patient" className="btn-outline">Refer a patient <ArrowRight size={16} /></Link>
           </div>
           <div className="mt-9 flex items-center gap-3 text-sm text-[#4a6973]">
@@ -437,11 +423,8 @@ export function PatientStoryContent({ blocks }: { blocks: readonly PatientStoryB
   );
 }
 
-export function WorriesSection() {
-  return <section className="worries-story section-pad"><div className="mx-auto max-w-[820px]"><p className="story-eyebrow">IT&apos;S OKAY TO HAVE QUESTIONS</p><h2 className="serif">Let&apos;s put a few<br /><em>worries at ease.</em></h2><p>Something else on your mind?</p><EnquiryLink className="worries-link" /></div></section>;
-}
 
-export function AboutSection() {
+export function AboutSection({ compact = false }: { compact?: boolean }) {
   return (
     <section id="about" className="about-premium section-pad">
       <div className="about-profile">
@@ -454,12 +437,18 @@ export function AboutSection() {
             />
             <span className="about-experience-badge">
               <strong>15+</strong>
-              <span>YEARS OF<br />CLINICAL EXPERIENCE</span>
+              <span>
+                YEARS OF<br />
+                CLINICAL EXPERIENCE
+              </span>
             </span>
           </div>
+
           <div className="about-profile-details">
             <p className="about-profile-name">Dr. Charu Makhija</p>
-            <p className="about-profile-title">Restorative Dentist &amp; Root Canal Specialist</p>
+            <p className="about-profile-title">
+              Restorative Dentist &amp; Root Canal Specialist
+            </p>
             <div className="about-profile-meta">
               <span>Clinician</span>
               <span aria-hidden="true">·</span>
@@ -470,14 +459,21 @@ export function AboutSection() {
             </p>
           </div>
         </Reveal>
+
         <Reveal className="about-copy" delay={100}>
           <p className="eyebrow">THE PERSON BEHIND THE PRACTICE</p>
-          <h2 className="about-profile-heading serif">Thoughtful care,<br /><em>built on trust.</em></h2>
+
+          <h2 className="about-profile-heading serif">
+            Thoughtful care,<br />
+            <em>built on trust.</em>
+          </h2>
+
           <blockquote className="about-approach">
             “My approach begins with listening, understanding what is happening,
             and explaining your options clearly so you can make an informed
             decision about your dental care.”
           </blockquote>
+
           <p>
             Dr Charu Makhija is an experienced Restorative Dentist and
             Endodontist with over 15 years of clinical experience. She is
@@ -485,38 +481,55 @@ export function AboutSection() {
             careful diagnosis, advanced treatment techniques and gentle,
             personalised dental care.
           </p>
+
+          {/* This paragraph now appears in both compact and full versions */}
           <p>
             She completed her BDS and MDS in Conservative Dentistry and
             Endodontics and also holds an MBA, which complements her clinical
-            expertise with a broader understanding of healthcare management and
-            professional leadership. She remains actively involved in continuing
-            education, research and academics.
+            expertise with a broader understanding of healthcare management
+            and professional leadership. She remains actively involved in
+            continuing education, research and academics.
           </p>
-          <p>
-            Known professionally through her copyrighted identity, “The Pulp
-            Doctor,” Dr Makhija believes that quality dental care begins with
-            trust and clear communication. She takes the time to listen to each
-            patient’s concerns, explain treatment options in simple language and
-            create a treatment plan that prioritises comfort, safety and
-            long-term oral health.
-          </p>
-          <p>
-            Alongside her clinical practice, Dr Makhija is a dedicated mentor
-            and educator. She conducts lectures, hands-on workshops and clinical
-            training programmes for dentists at different stages of their
-            professional journeys.
-          </p>
-          <p>
-            With a thoughtful approach, attention to detail and a genuine
-            commitment to patient wellbeing, Dr Charu Makhija strives to make
-            every patient feel heard, reassured and confident throughout their
-            treatment journey.
-          </p>
+
+          {!compact && (
+            <>
+              <p>
+                Known professionally through her copyrighted identity, “The
+                Pulp Doctor,” Dr Makhija believes that quality dental care
+                begins with trust and clear communication. She takes the time
+                to listen to each patient’s concerns, explain treatment options
+                in simple language and create a treatment plan that prioritises
+                comfort, safety and long-term oral health.
+              </p>
+
+              <p>
+                Alongside her clinical practice, Dr Makhija is a dedicated
+                mentor and educator. She conducts lectures, hands-on workshops
+                and clinical training programmes for dentists at different
+                stages of their professional journeys.
+              </p>
+
+              <p>
+                With a thoughtful approach, attention to detail and a genuine
+                commitment to patient wellbeing, Dr Charu Makhija strives to
+                make every patient feel heard, reassured and confident
+                throughout their treatment journey.
+              </p>
+            </>
+          )}
+
+          {compact && (
+            <Link href="/about" className="btn-outline mt-6">
+              Know more about Dr. Charu{" "}
+              <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          )}
         </Reveal>
       </div>
     </section>
   );
 }
+
 
 
 const services = [
@@ -586,8 +599,8 @@ export function TreatmentsSection() {
                   : ""
               }
             >
-              <a
-                href="#book"
+              <Link
+                href="/book"
                 className="treatment-reference-card"
                 aria-label={`Discuss ${name} at an appointment`}
               >
@@ -596,7 +609,7 @@ export function TreatmentsSection() {
                   <h3>{name}</h3>
                   <p>{description}</p>
                 </div>
-              </a>
+              </Link>
             </Reveal>
           ))}
         </div>
@@ -624,7 +637,7 @@ export function PublicUtilityControls() {
 export function EnquiryLink({ className = "btn-outline" }: { className?: string }) {
   return whatsappUrl
     ? <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className={className}>Enquire on WhatsApp <MessageCircle size={16} /></a>
-    : <a href="#contact" className={className}>Send an enquiry <ArrowRight size={16} /></a>;
+    : <Link href="/contact" className={className}>Send an enquiry <ArrowRight size={16} /></Link>;
 }
 
 export function DentistReferralSection() {
@@ -666,12 +679,12 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="footer-main footer-enhanced">
         <div className="footer-cta">
-          <a href="/" className="brand-mark footer-logo" aria-label="The Pulp Doctor home">
+          <Link href="/" className="brand-mark footer-logo" aria-label="The Pulp Doctor home">
             <img
               src={`${import.meta.env.BASE_URL}footer-logo.png`}
               alt="The Pulp Doctor"
             />
-          </a>
+          </Link>
           <p className="eyebrow !text-[#8fd0c7]">ONE SMALL STEP TOWARDS FEELING BETTER</p>
           <h2 className="serif">You don&apos;t have to<br />figure it out alone.</h2>
           <p>Whether you&apos;re in pain or simply unsure, start with a conversation. We&apos;ll help you find the next step.</p>
@@ -682,7 +695,7 @@ export function SiteFooter() {
           <div><p className="eyebrow !text-[#8fd0c7]">PREFER TO CALL?</p>{callUrl && <a className="footer-contact-link" href={callUrl}>+91 8448 500405 <MoveUpRight size={17} /></a>}</div>
           <div><p className="eyebrow !text-[#8fd0c7]">OR WRITE TO US</p><a className="footer-contact-link" href="mailto:drcharu.25@gmail.com">drcharu.25@gmail.com <MoveUpRight size={17} /></a></div>
           <p className="footer-doctor">Dr. Charu Makhija · The Pulp Doctor<br />SPECIALIST DENTAL CARE · DELHI NCR</p>
-          <nav className="footer-links" aria-label="Footer navigation"><a href="/#about">About Dr Makhija</a><a href="/#care">Treatments</a><Link href="/refer-a-patient">Refer a patient</Link><a href="/#book">Appointments</a><a href="/#locations">Clinic locations</a></nav>
+          <nav className="footer-links" aria-label="Footer navigation"><Link href="/about">About Dr Makhija</Link><Link href="/treatments">Treatments</Link><Link href="/refer-a-patient">Refer a patient</Link><Link href="/book">Appointments</Link><Link href="/locations">Clinic locations</Link><Link href="/contact">Contact</Link></nav>
           <p className="footer-urgent"><strong>Need urgent help?</strong> Facial or neck swelling, rapidly worsening symptoms, or swelling with fever needs urgent assessment. Difficulty breathing or swallowing requires emergency medical care.</p>
           <Link href="/admin/login" className="admin-link">Administrator sign in</Link>
         </div>

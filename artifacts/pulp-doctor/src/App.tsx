@@ -27,7 +27,7 @@ import {
   Printer, AlertCircle, ClipboardList, MoveUpRight,
 } from 'lucide-react';
 import NotFound from '@/pages/not-found';
-import { AboutSection, Brand, DentistReferralSection, EnquiryLink, HeroSection, PatientJourneySection, PatientStoriesSection, PatientStoryContent, PublicUtilityControls, Reveal, RootCanalSection, SiteFooter, SiteHeader, SymptomsSection, TreatmentsSection, WorriesSection, patientStories } from '@/components/landing-sections';
+import { AboutSection, Brand, DentistReferralSection, EnquiryLink, HeroSection, PatientJourneySection, PatientStoriesSection, PatientStoryContent, PublicUtilityControls, Reveal, RootCanalSection, SiteFooter, SiteHeader, SymptomsSection, TreatmentsSection, patientStories } from '@/components/landing-sections';
 
 const queryClient = new QueryClient();
 const locationDisplayOrder = ['gurugram-jcm', 'model-town-delhi', 'karol-bagh-delhi'];
@@ -206,7 +206,7 @@ function Booking({locations}:{locations:ClinicLocation[]}) {
         <label className="block text-sm font-semibold text-[#284b5b]">Notes <span className="font-normal text-[#71858b]">(optional)</span><textarea className="field mt-2 min-h-20" maxLength={1500} value={notes} onChange={e=>setNotes(e.target.value)}/></label>
         {create.isError&&<p role="alert" className="rounded-lg bg-[#fcf1ee] p-3 text-sm text-[#934a3f]">{errorText(create.error)} No appointment has been confirmed. Please retry.</p>}
         <button className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-50" type="submit" disabled={!slotId||create.isPending}>{create.isPending?'Sending request…':'Review and request appointment'} <ArrowRight size={16}/></button>
-        <p className="text-center text-xs text-[#70858b]">A booking is final only when the server confirms it.</p>
+
       </form>}
       <details className="mt-6 border-t border-[#e3eded] pt-4"><summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold text-[#365b69]"><ClipboardList size={16}/> Manage an existing appointment</summary>
         <div className="mt-4 grid gap-3 sm:grid-cols-2"><input className="field" aria-label="Appointment reference" placeholder="Appointment reference" value={manageId} onChange={e=>setManageId(e.target.value)}/><input className="field" aria-label="Management token" placeholder="Private management token" value={token} onChange={e=>setToken(e.target.value)}/></div>
@@ -224,7 +224,7 @@ function ClinicsSection({ locations, loading, error, retry }: { locations: Clini
 }
 
 function ContactSection() {
-  return <section id="contact" className="contact-premium section-pad"><div className="contact-inner"><div><Reveal><p className="eyebrow">GET IN TOUCH</p><h2 className="serif">Start with<br/><em>a conversation.</em></h2><p className="contact-intro">Send a general practice enquiry. For appointments, select a clinic above to view live availability.</p><a className="contact-email" href="mailto:drcharu.25@gmail.com">drcharu.25@gmail.com <MoveUpRight size={16}/></a></Reveal></div><Reveal delay={100}><ContactForm/></Reveal></div></section>;
+  return <section id="contact" className="contact-premium section-pad"><div className="contact-inner"><div><Reveal><p className="eyebrow">GET IN TOUCH</p><h2 className="serif">Start with<br/><em>a conversation.</em></h2><p className="contact-intro">Have a question about your care? Reach the practice directly or send a general enquiry. For a confirmed appointment request, choose a clinic and available time on our booking page.</p><div className="mt-6 grid gap-3"><a className="contact-email" href="tel:+918448500405"><span><strong>Call the practice</strong><small>+91 8448 500405</small></span><MoveUpRight size={16}/></a><a className="contact-email" href="mailto:drcharu.25@gmail.com"><span><strong>Email</strong><small>drcharu.25@gmail.com</small></span><MoveUpRight size={16}/></a><Link className="contact-email" href="/locations"><span><strong>Clinic locations</strong><small>View addresses and directions</small></span><MapPin size={16}/></Link></div><Link className="btn-primary mt-6" href="/book">Book an appointment <ArrowRight size={16}/></Link></Reveal></div><Reveal delay={100}><ContactForm/></Reveal></div></section>;
 }
 
 function PatientStoryPage({ slug }: { slug: string }) {
@@ -244,7 +244,7 @@ function PatientStoryPage({ slug }: { slug: string }) {
           <div className="story-article-body"><PatientStoryContent blocks={story.blocks} /></div>
           <div className="story-article-cta">
             <p>Every concern is different. Dr. Charu can help you understand your options.</p>
-            <Link href="/#book" className="btn-primary">{story.cta}<ArrowRight size={16} /></Link>
+            <Link href="/book" className="btn-primary">{story.cta}<ArrowRight size={16} /></Link>
           </div>
           <Link className="story-back-link story-back-bottom" href="/#stories"><ArrowLeft size={16} aria-hidden="true" /> Back to all stories</Link>
         </article>
@@ -261,13 +261,11 @@ function HomePage() {
     <HeroSection/>
     <SymptomsSection/>
     <RootCanalSection/>
-    <PatientJourneySection/>
-    <AboutSection/>
+    <AboutSection compact/>
     <PatientStoriesSection/>
     <TreatmentsSection/>
     <ClinicsSection locations={locations} loading={locationsQuery.isLoading} error={locationsQuery.isError} retry={() => locationsQuery.refetch()}/>
     <section className="urgent-premium"><div className="urgent-inner"><div className="urgent-copy"><p className="eyebrow !text-[#9bd0c8]">FLEXIBLE APPOINTMENT ENQUIRIES</p><h2 className="serif">Looking for another day?</h2><p>Can’t find a suitable appointment on the available days? Get in touch with us and we’ll help you explore the next available option.</p></div><EnquiryLink/><img className="urgent-sticker" src={`${import.meta.env.BASE_URL}tooth-sticker.png`} alt="" aria-hidden="true" /></div></section>
-    <DentistReferralSection/>
     <section className="faq-premium section-pad"><div className="faq-content"><div className="faq-layout"><div className="faq-introduction"><Reveal><p className="eyebrow">A FEW HELPFUL NOTES</p><h2 className="serif">Let's put a few<br/><em>worries at ease</em></h2><p className="faq-intro">Clear, straightforward answers to help you feel more informed about your care.</p><aside className="faq-reassurance"><HeartHandshake size={23} aria-hidden="true"/><div><strong>Nervous about the dental chair? You can tell us.</strong><p>You don&apos;t need to hide your worry or apologise for how long it&apos;s been. Let&apos;s begin with where you are today.</p></div></aside></Reveal></div><div className="faq-list">{[
       ['Does every toothache need a root canal?','No. Tooth pain can have several causes. An examination helps identify the cause and determine which treatment, if any, is appropriate.'],
       ['Will a root canal hurt?','Root canal treatment is performed with local anaesthesia to help control pain during the procedure. Some tenderness afterwards can occur, and the experience varies between patients. Dr. Charu can explain what to expect in your particular case.'],
@@ -276,13 +274,35 @@ function HomePage() {
       ['What happens if I delay treatment?','Some dental problems can worsen if left untreated. If you have persistent or worsening tooth pain, arrange a dental assessment rather than relying on the pain disappearing.'],
       ['Can I ask about the cost before treatment?','Yes. Ask about the proposed treatment, expected costs, and alternatives before proceeding. Costs can depend on your individual case, so the practice can discuss the details with you.'],
       ['Can I book on a day that is not listed?','You can contact the practice to enquire about other available options. Additional appointments are subject to the doctor’s actual availability.'],
-      ['Can I consult Dr. Charu online?','You can contact the practice using the enquiry form on this page or email drcharu.25@gmail.com to ask about your concern. Also you can call directly to the clinic to discuss your situation.'],
+      ['Can I consult Dr. Charu online?','You can contact the practice using the enquiry form on the Contact page or email drcharu.25@gmail.com to ask about your concern. You can also call the clinic to discuss your situation.'],
     ].map(([question,answer])=><details key={question}><summary><span>{question}</span><ChevronDown size={18} aria-hidden="true"/></summary><p>{answer}</p></details>)}</div></div></div></section>
     <Booking locations={locations}/>
-    <ContactSection/>
-    <WorriesSection/>
     <div className="sr-only" aria-live="polite">{health.isError ? 'Practice services are currently unavailable.' : ''}</div>
   </main></Shell>;
+}
+
+function AboutPage() {
+  return <Shell><main><AboutSection/></main></Shell>;
+}
+
+function TreatmentsPage() {
+  return <Shell><main><TreatmentsSection/><section className="section-pad text-center"><h2 className="serif text-4xl text-[#193f51]">Have questions about a treatment?</h2><Link className="btn-primary mt-5" href="/book">Request an appointment <ArrowRight size={16}/></Link></section></main></Shell>;
+}
+
+function LocationsPage() {
+  const locationsQuery = useListLocations();
+  const locations = inDoctorPreferredOrder(locationsQuery.data);
+  return <Shell><main><ClinicsSection locations={locations} loading={locationsQuery.isLoading} error={locationsQuery.isError} retry={() => locationsQuery.refetch()}/></main></Shell>;
+}
+
+function BookingPage() {
+  const locationsQuery = useListLocations();
+  const locations = inDoctorPreferredOrder(locationsQuery.data);
+  return <Shell><main><Booking locations={locations}/></main></Shell>;
+}
+
+function ContactPage() {
+  return <Shell><main><PatientJourneySection/><DentistReferralSection/><ContactSection/></main></Shell>;
 }
 
 type ReferralForm = Omit<ReferralInput,'selectedTeeth'|'authorizationConfirmed'|'uploadIds'> & {selectedTeeth:number[];authorizationConfirmed:boolean;uploadIds:string[]};
@@ -325,7 +345,7 @@ function ReferralPage() {
       </div> : <form onSubmit={e=>{e.preventDefault();setError('');if(!requiredReady){setError(`Please complete: ${missingFields.join(', ')}.`);return}setReview(true)}} className="space-y-8">
         <fieldset><legend className="mb-4 text-lg font-bold text-[#1d4657]">Referring dentist</legend><div className="grid gap-4 sm:grid-cols-2"><Field label="Referral date" type="date" value={form.referralDate} set={v=>set('referralDate',v)} required/><Field label="Dentist’s name" value={form.dentistName} set={v=>set('dentistName',v)} required/><Field label="Clinic / practice name" value={form.practiceName} set={v=>set('practiceName',v)} required/><Field label="Phone" type="tel" value={form.dentistPhone} set={v=>set('dentistPhone',v)} required/><Field label="Email" type="email" value={form.dentistEmail} set={v=>set('dentistEmail',v)} required/><Field label="Registration number (optional)" value={form.dentistRegistrationNumber||''} set={v=>set('dentistRegistrationNumber',v)}/><TextAreaField label="Practice address" value={form.practiceAddress} set={v=>set('practiceAddress',v)} max={400} required/></div></fieldset>
         <fieldset><legend className="mb-4 text-lg font-bold text-[#1d4657]">Patient details</legend><div className="grid gap-4 sm:grid-cols-2"><Field label="Patient name" value={form.patientName} set={v=>set('patientName',v)} required/><Field label="Patient phone" type="tel" value={form.patientPhone} set={v=>set('patientPhone',v)} required/><Field label="Patient email (optional)" type="email" value={form.patientEmail||''} set={v=>set('patientEmail',v)}/><label className="block text-sm font-semibold text-[#315364]">Patient age (optional)<input className="field mt-2 bg-white" type="number" min={0} max={120} value={form.patientAge??''} onChange={e=>set('patientAge',e.target.value===''?null:Number(e.target.value))}/></label><label className="block text-sm font-semibold text-[#315364]">Patient gender (optional)<select className="field mt-2 bg-white" value={form.patientGender||''} onChange={e=>set('patientGender',e.target.value||null)}><option value="">Not specified</option><option>Female</option><option>Male</option><option>Non-binary</option><option>Prefer not to say</option></select></label><Field label="Date of birth (only if clinically necessary)" type="date" value={form.dateOfBirth||''} set={v=>set('dateOfBirth',v)}/></div></fieldset>
-        <fieldset><legend className="mb-1 text-lg font-bold text-[#1d4657]">Tooth selection</legend><p className="mb-4 text-sm text-[#6a7f85]">Adult permanent teeth · FDI numbering. Tab to a tooth and use Space or Enter to select.</p><div className="rounded-2xl bg-[#f1f6f6] p-4 sm:p-6"><div className="mx-auto max-w-[560px]"><p className="mb-2 text-center text-[.65rem] font-bold uppercase tracking-[.18em] text-[#70868b]">Upper · right to left</p><div className="flex justify-center gap-1 sm:gap-2">{fdi[0].map(n=><Tooth key={n} number={n} selected={form.selectedTeeth.includes(n)} toggle={()=>changeTeeth(n)}/>)}</div><div className="my-4 border-t border-dashed border-[#bdcecf]"/><div className="flex justify-center gap-1 sm:gap-2">{fdi[1].map(n=><Tooth key={n} number={n} selected={form.selectedTeeth.includes(n)} toggle={()=>changeTeeth(n)}/>)}</div><p className="mb-2 mt-2 text-center text-[.65rem] font-bold uppercase tracking-[.18em] text-[#70868b]">Lower · right to left</p><div className="flex justify-center gap-1 sm:gap-2">{fdi[2].map(n=><Tooth key={n} number={n} selected={form.selectedTeeth.includes(n)} toggle={()=>changeTeeth(n)}/>)}</div><div className="my-4 border-t border-dashed border-[#bdcecf]"/><div className="flex justify-center gap-1 sm:gap-2">{fdi[3].map(n=><Tooth key={n} number={n} selected={form.selectedTeeth.includes(n)} toggle={()=>changeTeeth(n)}/>)}</div></div><p className="mt-4 text-center text-xs text-[#52717a]" aria-live="polite">Selected: {form.selectedTeeth.length?form.selectedTeeth.slice().sort().join(', '):'None yet'}</p></div></fieldset>
+        <fieldset><legend className="mb-1 text-lg font-bold text-[#1d4657]">Tooth selection</legend><p className="mb-4 text-sm text-[#6a7f85]">Adult permanent teeth · FDI numbering. Viewed from the patient’s perspective; the vertical line marks the midline. Tab to a tooth and use Space or Enter to select.</p><div className="rounded-2xl bg-[#f1f6f6] p-4 sm:p-6"><div className="mx-auto max-w-[560px]"><div className="tooth-chart-row"><div className="tooth-quadrant" aria-label="Upper right quadrant">{fdi[0].map(n=><Tooth key={n} number={n} selected={form.selectedTeeth.includes(n)} toggle={()=>changeTeeth(n)}/>)}</div><div className="tooth-midline" aria-hidden="true"/><div className="tooth-quadrant" aria-label="Upper left quadrant">{fdi[1].map(n=><Tooth key={n} number={n} selected={form.selectedTeeth.includes(n)} toggle={()=>changeTeeth(n)}/>)}</div></div><div className="tooth-chart-divider"><span>UPPER ARCH</span></div><div className="tooth-chart-row"><div className="tooth-quadrant" aria-label="Lower right quadrant">{fdi[2].map(n=><Tooth key={n} number={n} selected={form.selectedTeeth.includes(n)} toggle={()=>changeTeeth(n)}/>)}</div><div className="tooth-midline" aria-hidden="true"/><div className="tooth-quadrant" aria-label="Lower left quadrant">{fdi[3].map(n=><Tooth key={n} number={n} selected={form.selectedTeeth.includes(n)} toggle={()=>changeTeeth(n)}/>)}</div></div><div className="tooth-chart-labels"><span>Patient’s right</span><span>Patient’s left</span></div></div><p className="mt-4 text-center text-xs text-[#52717a]" aria-live="polite">Selected: {form.selectedTeeth.length?form.selectedTeeth.slice().sort().join(', '):'None yet'}</p></div></fieldset>
         <fieldset><legend className="mb-4 text-lg font-bold text-[#1d4657]">Referral request and restoration</legend><p className="mb-3 text-sm text-[#657b81]">Select all that apply.</p><div className="grid gap-2 sm:grid-cols-2">{requestOptions.map(option=><label key={option} className="flex items-start gap-2 rounded-xl border border-[#dce8e8] bg-white p-3 text-sm text-[#315364]"><input type="checkbox" className="mt-1 accent-[#176d70]" checked={form.requestTypes.includes(option)} onChange={e=>set('requestTypes',e.target.checked?[...form.requestTypes,option]:form.requestTypes.filter(value=>value!==option))}/>{option}</label>)}</div>{form.requestTypes.includes('Other')&&<Field label="Please specify other reason" value={form.otherReferralReason||''} set={v=>set('otherReferralReason',v)}/>}<div className="mt-4 grid gap-4 sm:grid-cols-2"><SelectField label="Existing restoration" value={form.existingRestoration} values={restorationOptions} set={v=>set('existingRestoration',v)}/><SelectField label="Requested coronal restoration" value={form.coronalRestoration} values={coronalOptions} set={v=>set('coronalRestoration',v)}/></div></fieldset>
         <fieldset><legend className="mb-4 text-lg font-bold text-[#1d4657]">Clinical context</legend><div className="grid gap-4 sm:grid-cols-2"><TextAreaField label="Relevant clinical information" value={form.relevantClinicalInformation} set={v=>set('relevantClinicalInformation',v)} max={4000}/><TextAreaField label="Restorative treatment plan" value={form.restorativePlan||''} set={v=>set('restorativePlan',v)} max={2000}/><TextAreaField label="Clinical comments" value={form.clinicalComments||''} set={v=>set('clinicalComments',v)} max={4000}/><Field label="Preferred appointment date (optional)" type="date" value={form.preferredDate||''} set={v=>set('preferredDate',v)}/><Field label="Preferred time (optional)" type="time" value={form.preferredTime||''} set={v=>set('preferredTime',v)}/></div><label className="mt-4 block text-sm font-semibold text-[#315364]">X-ray / CBCT attachment <span className="font-normal text-[#74878c]">(optional · JPEG, PNG, WebP or PDF, up to 10 MB; maximum 5 files)</span><input className="field mt-2 bg-white" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" disabled={upload.isPending||form.uploadIds.length>=5} onChange={e=>{const file=e.target.files?.[0];if(file)void addFile(file);e.currentTarget.value=''}}/></label>{upload.isPending&&<p className="mt-2 text-xs text-[#4c7778]">Requesting secure upload…</p>}{form.uploadIds.length>0&&<ul className="mt-2 text-xs text-[#47706f]">{form.uploadIds.map((id,i)=><li key={id} className="flex justify-between">Secure attachment {i+1}<button type="button" className="underline" onClick={()=>set('uploadIds',form.uploadIds.filter(x=>x!==id))}>Remove</button></li>)}</ul>}</fieldset>
         <label className="flex items-start gap-3 rounded-xl border border-[#d7e5e5] bg-[#f7faf9] p-4 text-sm leading-6 text-[#4d6871]"><input type="checkbox" className="mt-1 h-4 w-4 accent-[#176d70]" checked={form.authorizationConfirmed} onChange={e=>set('authorizationConfirmed',e.target.checked)}/><span>I confirm that appropriate patient consent / authorisation has been obtained to share the information in this referral, including any attached images.</span></label>
@@ -424,7 +444,10 @@ function LocationManagement({locations,update}:{locations:ClinicLocation[];updat
 
 function Router() {
   const [location]=useLocation();
-  return <ErrorBoundary resetKey={location}><Switch><Route path="/" component={HomePage}/><Route path="/stories/:slug">{params=><PatientStoryPage slug={params.slug}/>}</Route><Route path="/refer-a-patient" component={ReferralPage}/><Route path="/admin/login" component={AdminLogin}/><Route path="/admin" component={AdminDashboard}/><Route component={NotFound}/></Switch></ErrorBoundary>;
+  useLayoutEffect(() => {
+    if (!location.includes('#')) window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [location]);
+  return <ErrorBoundary resetKey={location}><Switch><Route path="/" component={HomePage}/><Route path="/about" component={AboutPage}/><Route path="/treatments" component={TreatmentsPage}/><Route path="/locations" component={LocationsPage}/><Route path="/book" component={BookingPage}/><Route path="/contact" component={ContactPage}/><Route path="/stories/:slug">{params=><PatientStoryPage slug={params.slug}/>}</Route><Route path="/refer-a-patient" component={ReferralPage}/><Route path="/admin/login" component={AdminLogin}/><Route path="/admin" component={AdminDashboard}/><Route component={NotFound}/></Switch></ErrorBoundary>;
 }
 function App() {return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/,'')}><Router/></WouterRouter><Toaster/></TooltipProvider></QueryClientProvider>;}
 export default App;
