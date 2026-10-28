@@ -377,6 +377,20 @@ export interface ReferralInput {
   authorizationConfirmed: true;
 }
 
+export type ContactMessageInputService = typeof ContactMessageInputService[keyof typeof ContactMessageInputService];
+
+
+export const ContactMessageInputService = {
+  Root_Canal_Treatment: 'Root Canal Treatment',
+  Dental_Implants: 'Dental Implants',
+  'Veneers_&_Crowns': 'Veneers & Crowns',
+  Smile_Designing: 'Smile Designing',
+  Teeth_Cleaning: 'Teeth Cleaning',
+  Oral_Surgery: 'Oral Surgery',
+  Teeth_Whitening: 'Teeth Whitening',
+  'Other_/_Not_sure': 'Other / Not sure',
+} as const;
+
 export interface ContactMessageInput {
   /**
      * @minLength 2
@@ -394,6 +408,7 @@ export interface ContactMessageInput {
      * @maxLength 2000
      */
   message: string;
+  service?: ContactMessageInputService;
 }
 
 export interface ContactMessageConfirmation {
@@ -409,6 +424,8 @@ export interface ContactMessage {
   /** @nullable */
   phone: string | null;
   message: string;
+  /** @nullable */
+  service: string | null;
   createdAt: string;
 }
 

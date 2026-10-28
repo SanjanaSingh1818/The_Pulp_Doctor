@@ -60,7 +60,8 @@ export const CreateContactMessageBody = zod.object({
   "name": zod.string().min(createContactMessageBodyNameMin).max(createContactMessageBodyNameMax),
   "email": zod.string().email(),
   "phone": zod.string().max(createContactMessageBodyPhoneMax).nullish(),
-  "message": zod.string().min(createContactMessageBodyMessageMin).max(createContactMessageBodyMessageMax)
+  "message": zod.string().min(createContactMessageBodyMessageMin).max(createContactMessageBodyMessageMax),
+  "service": zod.enum(['Root Canal Treatment', 'Dental Implants', 'Veneers & Crowns', 'Smile Designing', 'Teeth Cleaning', 'Oral Surgery', 'Teeth Whitening', 'Other / Not sure']).optional()
 })
 
 export const CreateContactMessageResponse = zod.object({
@@ -917,6 +918,7 @@ export const ListAdminContactMessagesResponseItem = zod.object({
   "email": zod.string().email(),
   "phone": zod.string().nullable(),
   "message": zod.string(),
+  "service": zod.string().nullable(),
   "createdAt": zod.coerce.date()
 })
 export const ListAdminContactMessagesResponse = zod.array(ListAdminContactMessagesResponseItem)

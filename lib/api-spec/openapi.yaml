@@ -994,6 +994,17 @@ components:
         email: { type: string, format: email }
         phone: { type: ["string", "null"], maxLength: 24 }
         message: { type: string, minLength: 10, maxLength: 2000 }
+        service:
+          type: string
+          enum:
+            - Root Canal Treatment
+            - Dental Implants
+            - Veneers & Crowns
+            - Smile Designing
+            - Teeth Cleaning
+            - Oral Surgery
+            - Teeth Whitening
+            - Other / Not sure
     ContactMessageConfirmation:
       type: object
       required: [reference, emailStatus]
@@ -1003,7 +1014,7 @@ components:
           $ref: "#/components/schemas/NotificationStatus"
     ContactMessage:
       type: object
-      required: [id, reference, name, email, phone, message, createdAt]
+      required: [id, reference, name, email, phone, message, service, createdAt]
       properties:
         id: { type: string }
         reference: { type: string }
@@ -1011,6 +1022,7 @@ components:
         email: { type: string, format: email }
         phone: { type: ["string", "null"] }
         message: { type: string }
+        service: { type: ["string", "null"] }
         createdAt: { type: string, format: date-time }
     ReferralConfirmation:
       type: object

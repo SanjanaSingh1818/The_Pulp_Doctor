@@ -30,10 +30,11 @@ async function notificationMessage(
     if (!contact) {
       throw new Error("Contact message for notification was not found.");
     }
+    const service = contact.service || "Not specified";
     return {
       subject: `Website contact message · ${contact.reference}`,
-      text: `A website contact message was received from ${contact.name}. Reference ${contact.reference}. Review the protected admin dashboard for details.`,
-      html: `<p>A website contact message was received.</p><p>Reference: <strong>${escapeHtml(contact.reference)}</strong></p><p>Review details in the protected admin dashboard.</p>`,
+      text: `A website contact message was received from ${contact.name}. Service: ${service}. Reference ${contact.reference}. Review the protected admin dashboard for details.`,
+      html: `<p>A website contact message was received.</p><p>Service: <strong>${escapeHtml(service)}</strong></p><p>Reference: <strong>${escapeHtml(contact.reference)}</strong></p><p>Review details in the protected admin dashboard.</p>`,
     };
   }
   if (notification.entityType === "appointment") {

@@ -103,6 +103,7 @@ router.post("/contact", async (req, res): Promise<void> => {
       email: parsed.data.email.trim().toLowerCase(),
       phone: parsed.data.phone?.trim() || null,
       message: parsed.data.message.trim(),
+      service: parsed.data.service ?? null,
     });
     let emailStatus: "accepted" | "delivered" | "failed" | "not_configured" = "failed";
     try {

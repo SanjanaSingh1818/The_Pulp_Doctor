@@ -14,5 +14,7 @@ export interface ContactMessage {
   /** @nullable */
   phone: string | null;
   message: string;
+  /** @nullable */
+  service: string | null;
   createdAt: Date;
 }

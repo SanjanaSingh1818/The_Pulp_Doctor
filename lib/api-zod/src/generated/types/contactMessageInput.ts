@@ -5,6 +5,7 @@
  * Public website, appointments, referrals, and protected clinic administration.
  * OpenAPI spec version: 0.1.0
  */
+import type { ContactMessageInputService } from './contactMessageInputService';
 
 export interface ContactMessageInput {
   /**
@@ -23,4 +24,5 @@ export interface ContactMessageInput {
      * @maxLength 2000
      */
   message: string;
+  service?: ContactMessageInputService;
 }

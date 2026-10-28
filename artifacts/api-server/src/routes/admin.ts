@@ -776,6 +776,7 @@ router.get("/contact-messages", async (req, res): Promise<void> => {
       email: message.email,
       phone: message.phone,
       message: message.message,
+      service: message.service ?? null,
       createdAt: message.createdAt,
     }))));
   } catch (error) {

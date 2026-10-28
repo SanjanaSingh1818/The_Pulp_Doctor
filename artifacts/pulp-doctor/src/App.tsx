@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import {
   useHealthCheck, useListLocations, useGetAvailability, useCreateAppointment, useCancelAppointment,
@@ -23,11 +23,11 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import {
-  ArrowRight, Check, ChevronDown, Clock3, MapPin, ShieldCheck, LogOut, Plus, RefreshCw,
+  ArrowLeft, ArrowRight, Check, ChevronDown, Clock3, HeartHandshake, MapPin, ShieldCheck, LogOut, Plus, RefreshCw,
   Printer, AlertCircle, ClipboardList, MoveUpRight,
 } from 'lucide-react';
 import NotFound from '@/pages/not-found';
-import { AboutSection, Brand, DentistReferralSection, EnquiryLink, HeroSection, PatientJourneySection, PublicUtilityControls, Reveal, RootCanalSection, SiteFooter, SiteHeader, SymptomsSection, TreatmentsSection, WorriesSection } from '@/components/landing-sections';
+import { AboutSection, Brand, DentistReferralSection, EnquiryLink, HeroSection, PatientJourneySection, PatientStoriesSection, PatientStoryContent, PublicUtilityControls, Reveal, RootCanalSection, SiteFooter, SiteHeader, SymptomsSection, TreatmentsSection, WorriesSection, patientStories } from '@/components/landing-sections';
 
 const queryClient = new QueryClient();
 const locationDisplayOrder = ['gurugram-jcm', 'model-town-delhi', 'karol-bagh-delhi'];
@@ -51,7 +51,52 @@ const coronalOptions: CoronalRestoration[] = [
   'Direct restoration', 'Full-coverage crown', 'Onlay or overlay',
   'Fiber-Reinforced Restoration', 'Other', 'To be decided after clinical assessment',
 ];
-const today = () => new Date().toLocaleDateString('en-CA');
+const contactServices = [
+  'Root Canal Treatment',
+  'Dental Implants',
+  'Veneers & Crowns',
+  'Smile Designing',
+  'Teeth Cleaning',
+  'Oral Surgery',
+  'Teeth Whitening',
+  'Other / Not sure',
+] as const;
+function clinicLocalDateTime(now: Date) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(now);
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return {
+    date: `${values.year}-${values.month}-${values.day}`,
+    time: `${values.hour}:${values.minute}`,
+  };
+}
+const today = (now = new Date()) => clinicLocalDateTime(now).date;
+const isClinicSlotPast = (date: string, time: string, now: Date) => {
+  const localNow = clinicLocalDateTime(now);
+  return date < localNow.date || (date === localNow.date && time < localNow.time);
+};
+function useClinicNow() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    let interval: number | undefined;
+    const timeout = window.setTimeout(() => {
+      setNow(new Date());
+      interval = window.setInterval(() => setNow(new Date()), 60_000);
+    }, 60_000 - (Date.now() % 60_000));
+    return () => {
+      window.clearTimeout(timeout);
+      if (interval !== undefined) window.clearInterval(interval);
+    };
+  }, []);
+  return now;
+}
 const slotsForTimeRange = (opensAt: string, closesAt: string, duration: number) => {
   const minutes = (time: string) => {
     const [hours, mins] = time.split(':').map(Number);
@@ -81,16 +126,18 @@ function ContactForm() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
+  const [service, setService] = useState<(typeof contactServices)[number] | ''>('');
   const [reference, setReference] = useState('');
   return <form className="soft-card rounded-2xl p-5 sm:p-7" onSubmit={(event) => {
     event.preventDefault();
-    send.mutate({ data: { name, email, phone: phone || null, message } }, {
+    send.mutate({ data: { name, email, phone: phone || null, message, ...(service ? { service } : {}) } }, {
       onSuccess: (result) => {
         setReference(result.reference);
         setName('');
         setEmail('');
         setPhone('');
         setMessage('');
+        setService('');
       },
     });
   }}>
@@ -98,6 +145,15 @@ function ContactForm() {
       <label className="text-sm font-semibold text-[#284b5b]">Your name<input className="field mt-2" required minLength={2} maxLength={120} autoComplete="name" value={name} onChange={(event) => setName(event.target.value)} /></label>
       <label className="text-sm font-semibold text-[#284b5b]">Email<input className="field mt-2" type="email" required maxLength={254} autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} /></label>
       <label className="text-sm font-semibold text-[#284b5b] sm:col-span-2">Phone <span className="font-normal">(optional)</span><input className="field mt-2" type="tel" maxLength={24} autoComplete="tel" value={phone} onChange={(event) => setPhone(event.target.value)} /></label>
+      <label className="text-sm font-semibold text-[#284b5b] sm:col-span-2">Which treatment or service are you enquiring about?
+        <select className="field mt-2" value={service} onChange={(event) => {
+          const value = event.currentTarget.value;
+          setService(contactServices.find((option) => option === value) ?? '');
+        }}>
+          <option value="">Select a service</option>
+          {contactServices.map((option) => <option key={option} value={option}>{option}</option>)}
+        </select>
+      </label>
       <label className="text-sm font-semibold text-[#284b5b] sm:col-span-2">Message<textarea className="field mt-2 min-h-32" required minLength={10} maxLength={2000} value={message} onChange={(event) => setMessage(event.target.value)} /></label>
     </div>
     {send.isError && <p role="alert" className="mt-3 rounded-xl bg-[#fcf1ee] p-3 text-sm text-[#934a3f]">{errorText(send.error)}</p>}
@@ -119,6 +175,7 @@ function LocationCards({locations,loading,error,retry}:{locations:ClinicLocation
     </div></article>)}</div>;
 }
 function Booking({locations}:{locations:ClinicLocation[]}) {
+  const clinicNow=useClinicNow();
   const [locationId,setLocationId]=useState(''); const [date,setDate]=useState(today()); const [slotId,setSlotId]=useState('');
   const [name,setName]=useState(''); const [phone,setPhone]=useState(''); const [email,setEmail]=useState(''); const [kind,setKind]=useState(''); const [notes,setNotes]=useState('');
   const [confirmation,setConfirmation]=useState<{id:string;reference:string;time:string;date:string;status:string;managementToken:string}|null>(null);
@@ -128,7 +185,7 @@ function Booking({locations}:{locations:ClinicLocation[]}) {
   const [manageLocation,setManageLocation]=useState(''); const [manageDate,setManageDate]=useState(today()); const [manageSlot,setManageSlot]=useState('');
   const manageParams=useMemo(()=>({locationId:manageLocation,date:manageDate}),[manageLocation,manageDate]);
   const manageAvailability=useGetAvailability(manageParams,{query:{enabled:!!manageLocation&&!!manageDate,queryKey:getGetAvailabilityQueryKey(manageParams)}});
-  const validSlots=availability.data?.slots.filter(slot=>slot.available) ?? [];
+  const validSlots=availability.data?.slots.filter(slot=>slot.available&&!isClinicSlotPast(date,slot.id,clinicNow)) ?? [];
   function submit(e:React.FormEvent) {e.preventDefault(); if(!locationId||!slotId)return; create.mutate({data:{locationId,date,slotId,patientName:name,phone,email,appointmentType:kind,notes}}, {onSuccess:(result)=>setConfirmation({id:result.id,reference:result.reference,time:result.time,date:result.date,status:result.status,managementToken:result.managementToken})});}
   return <section id="book" className="section-pad bg-[#edf5f5]">
     <div className="mx-auto grid max-w-[1160px] gap-10 lg:grid-cols-[.85fr_1.15fr]">
@@ -153,7 +210,7 @@ function Booking({locations}:{locations:ClinicLocation[]}) {
       </form>}
       <details className="mt-6 border-t border-[#e3eded] pt-4"><summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold text-[#365b69]"><ClipboardList size={16}/> Manage an existing appointment</summary>
         <div className="mt-4 grid gap-3 sm:grid-cols-2"><input className="field" aria-label="Appointment reference" placeholder="Appointment reference" value={manageId} onChange={e=>setManageId(e.target.value)}/><input className="field" aria-label="Management token" placeholder="Private management token" value={token} onChange={e=>setToken(e.target.value)}/></div>
-        <div className="mt-3 grid gap-3 sm:grid-cols-3"><select className="field" aria-label="New clinic location" value={manageLocation} onChange={e=>{setManageLocation(e.target.value);setManageSlot('')}}><option value="">New clinic</option>{locations.map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select><input className="field" aria-label="New appointment date" type="date" min={today()} value={manageDate} onChange={e=>{setManageDate(e.target.value);setManageSlot('')}}/><select className="field" aria-label="New appointment time" value={manageSlot} onChange={e=>setManageSlot(e.target.value)}><option value="">Available time</option>{manageAvailability.data?.slots.filter(s=>s.available).map(s=><option key={s.id} value={s.id}>{s.label}</option>)}</select></div>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3"><select className="field" aria-label="New clinic location" value={manageLocation} onChange={e=>{setManageLocation(e.target.value);setManageSlot('')}}><option value="">New clinic</option>{locations.map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select><input className="field" aria-label="New appointment date" type="date" min={today(clinicNow)} value={manageDate} onChange={e=>{setManageDate(e.target.value);setManageSlot('')}}/><select className="field" aria-label="New appointment time" value={manageSlot} onChange={e=>setManageSlot(e.target.value)}><option value="">Available time</option>{manageAvailability.data?.slots.filter(s=>s.available&&!isClinicSlotPast(manageDate,s.id,clinicNow)).map(s=><option key={s.id} value={s.id}>{s.label}</option>)}</select></div>
         {manageAvailability.isError&&manageLocation&&<p className="mt-2 text-xs text-[#925044]">Times unavailable. Retry availability before rescheduling.</p>}
         <div className="mt-3 flex flex-wrap gap-2"><button className="btn-outline !py-2 text-sm" type="button" disabled={cancel.isPending||manageId.length===0||token.length<20} onClick={()=>{if(confirm('Cancel this appointment?'))cancel.mutate({appointmentId:manageId,data:{managementToken:token}}, {onSuccess:()=>setManageMessage('The server has cancelled this appointment.'),onError:e=>setManageMessage(errorText(e))})}}>Cancel appointment</button><button className="btn-outline !py-2 text-sm" type="button" disabled={reschedule.isPending||!manageId||token.length<20||!manageLocation||!manageSlot} onClick={()=>{if(confirm('Reschedule this appointment to the selected published slot?'))reschedule.mutate({appointmentId:manageId,data:{managementToken:token,locationId:manageLocation,date:manageDate,slotId:manageSlot}},{onSuccess:()=>setManageMessage('The server has rescheduled this appointment.'),onError:e=>setManageMessage(errorText(e))})}}>{reschedule.isPending?'Rescheduling…':'Reschedule appointment'}</button></div>
         {(manageMessage||cancel.isError||reschedule.isError)&&<p role="status" className="mt-2 text-sm text-[#775147]">{manageMessage||errorText(cancel.error||reschedule.error)}</p>}
@@ -170,6 +227,32 @@ function ContactSection() {
   return <section id="contact" className="contact-premium section-pad"><div className="contact-inner"><div><Reveal><p className="eyebrow">GET IN TOUCH</p><h2 className="serif">Start with<br/><em>a conversation.</em></h2><p className="contact-intro">Send a general practice enquiry. For appointments, select a clinic above to view live availability.</p><a className="contact-email" href="mailto:drcharu.25@gmail.com">drcharu.25@gmail.com <MoveUpRight size={16}/></a></Reveal></div><Reveal delay={100}><ContactForm/></Reveal></div></section>;
 }
 
+function PatientStoryPage({ slug }: { slug: string }) {
+  const story = patientStories.find((item) => item.slug === slug);
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [slug]);
+  if (!story) return <NotFound />;
+  return (
+    <Shell>
+      <main className="story-article-page section-pad">
+        <article className="story-article">
+          <Link className="story-back-link" href="/#stories"><ArrowLeft size={16} aria-hidden="true" /> Back to stories</Link>
+          <p className="story-category">{story.category} <span>· 2 MIN READ</span></p>
+          <h1 className="serif">{story.title}</h1>
+          <p className="story-article-disclaimer">An illustrative patient guide, not a real patient account or testimonial.</p>
+          <div className="story-article-body"><PatientStoryContent blocks={story.blocks} /></div>
+          <div className="story-article-cta">
+            <p>Every concern is different. Dr. Charu can help you understand your options.</p>
+            <Link href="/#book" className="btn-primary">{story.cta}<ArrowRight size={16} /></Link>
+          </div>
+          <Link className="story-back-link story-back-bottom" href="/#stories"><ArrowLeft size={16} aria-hidden="true" /> Back to all stories</Link>
+        </article>
+      </main>
+    </Shell>
+  );
+}
+
 function HomePage() {
   const health = useHealthCheck();
   const locationsQuery = useListLocations();
@@ -180,11 +263,12 @@ function HomePage() {
     <RootCanalSection/>
     <PatientJourneySection/>
     <AboutSection/>
+    <PatientStoriesSection/>
     <TreatmentsSection/>
     <ClinicsSection locations={locations} loading={locationsQuery.isLoading} error={locationsQuery.isError} retry={() => locationsQuery.refetch()}/>
     <section className="urgent-premium"><div className="urgent-inner"><div className="urgent-copy"><p className="eyebrow !text-[#9bd0c8]">FLEXIBLE APPOINTMENT ENQUIRIES</p><h2 className="serif">Looking for another day?</h2><p>Can’t find a suitable appointment on the available days? Get in touch with us and we’ll help you explore the next available option.</p></div><EnquiryLink/><img className="urgent-sticker" src={`${import.meta.env.BASE_URL}tooth-sticker.png`} alt="" aria-hidden="true" /></div></section>
     <DentistReferralSection/>
-    <section className="faq-premium section-pad"><div className="faq-content"><Reveal><p className="eyebrow">A FEW HELPFUL NOTES</p><h2 className="serif">Questions you might be<br/><em>wondering about.</em></h2><p className="faq-intro">Clear, straightforward answers to help you feel more informed about your care.</p></Reveal><div className="faq-list">{[
+    <section className="faq-premium section-pad"><div className="faq-content"><div className="faq-layout"><div className="faq-introduction"><Reveal><p className="eyebrow">A FEW HELPFUL NOTES</p><h2 className="serif">Let's put a few<br/><em>worries at ease</em></h2><p className="faq-intro">Clear, straightforward answers to help you feel more informed about your care.</p><aside className="faq-reassurance"><HeartHandshake size={23} aria-hidden="true"/><div><strong>Nervous about the dental chair? You can tell us.</strong><p>You don&apos;t need to hide your worry or apologise for how long it&apos;s been. Let&apos;s begin with where you are today.</p></div></aside></Reveal></div><div className="faq-list">{[
       ['Does every toothache need a root canal?','No. Tooth pain can have several causes. An examination helps identify the cause and determine which treatment, if any, is appropriate.'],
       ['Will a root canal hurt?','Root canal treatment is performed with local anaesthesia to help control pain during the procedure. Some tenderness afterwards can occur, and the experience varies between patients. Dr. Charu can explain what to expect in your particular case.'],
       ['How many visits will I need?','This depends on the condition of the tooth, the complexity of treatment, and your individual needs. The expected number of visits can be discussed after an assessment.'],
@@ -193,7 +277,7 @@ function HomePage() {
       ['Can I ask about the cost before treatment?','Yes. Ask about the proposed treatment, expected costs, and alternatives before proceeding. Costs can depend on your individual case, so the practice can discuss the details with you.'],
       ['Can I book on a day that is not listed?','You can contact the practice to enquire about other available options. Additional appointments are subject to the doctor’s actual availability.'],
       ['Can I consult Dr. Charu online?','You can contact the practice using the enquiry form on this page or email drcharu.25@gmail.com to ask about your concern. Also you can call directly to the clinic to discuss your situation.'],
-    ].map(([question,answer])=><details key={question}><summary><span>{question}</span><ChevronDown size={18} aria-hidden="true"/></summary><p>{answer}</p></details>)}</div></div></section>
+    ].map(([question,answer])=><details key={question}><summary><span>{question}</span><ChevronDown size={18} aria-hidden="true"/></summary><p>{answer}</p></details>)}</div></div></div></section>
     <Booking locations={locations}/>
     <ContactSection/>
     <WorriesSection/>
@@ -307,7 +391,7 @@ function AdminDashboard() {
           <div className="mt-6 border-t border-[#e1eaea] pt-4"><h3 className="text-sm font-bold text-[#315766]">Upcoming published overrides</h3>{availabilityOverrides.isError?<ErrorPanel retry={()=>availabilityOverrides.refetch()}/>:availabilityOverrides.data?.length?<ul className="mt-3 space-y-2">{availabilityOverrides.data.map(item=><li key={item.id} className="flex items-start justify-between gap-3 rounded-lg bg-[#f2f7f6] p-3 text-xs text-[#536d75]"><span><b>{item.date}</b> · {locations.find(l=>l.id===item.locationId)?.name||item.locationId} · <span className="capitalize">{item.kind}</span>{item.slots.length?` · ${item.slots.join(', ')}`:''}{item.reason?` · ${item.reason}`:''}</span><button className="shrink-0 font-bold text-[#9b5147] underline" disabled={removeOverride.isPending} onClick={()=>{if(confirm('Delete this availability override and reopen its schedule?'))removeOverride.mutate({overrideId:item.id},{onSuccess:()=>{void availabilityOverrides.refetch();void qc.invalidateQueries({queryKey:getGetAvailabilityQueryKey({locationId:item.locationId,date:item.date})});setMessage('Availability override deleted.')},onError:adminError})}}>Delete</button></li>)}</ul>:<p className="mt-3 text-xs text-[#73868b]">{availabilityOverrides.isLoading?'Loading overrides…':'No upcoming overrides.'}</p>}</div>
           <details className="mt-6 border-t border-[#e0eaea] pt-4"><summary className="cursor-pointer text-sm font-bold text-[#42646e]">Cancel or reschedule an appointment</summary><p className="mt-3 text-sm leading-6 text-[#687d83]">Use appointment list actions to cancel. Rescheduling is available where a current server-published slot can be selected. Existing bookings are never changed when schedules are edited.</p></details></section></div>}
       {tab==='schedule'&&<LocationManagement locations={locations} update={(id,data)=>updateLocation.mutate({locationId:id,data},{onSuccess:()=>{void qc.invalidateQueries({queryKey:getListLocationsQueryKey()});refresh();setMessage('Clinic details updated.')},onError:adminError})}/>}
-      {tab==='messages'&&<section className="soft-card mt-6 rounded-2xl p-5 sm:p-7"><p className="eyebrow">Practice enquiries</p><h2 className="mt-2 text-xl font-bold text-[#21485a]">Contact messages</h2>{contactMessages.isError?<ErrorPanel retry={()=>contactMessages.refetch()}/>:!contactMessages.data?.length?<p className="mt-5 rounded-xl bg-[#f1f6f5] p-5 text-sm text-[#6b8086]">{contactMessages.isLoading?'Loading protected messages…':'No contact messages are available.'}</p>:<div className="mt-5 space-y-3">{contactMessages.data.map(item=><article key={item.id} className="rounded-xl border border-[#dbe7e7] bg-white p-4"><div className="flex flex-wrap justify-between gap-3"><div><h3 className="font-bold text-[#234a5b]">{item.name} · {item.reference}</h3><p className="mt-1 text-sm text-[#5e747b]"><a className="underline" href={`mailto:${encodeURIComponent(item.email)}`}>{item.email}</a>{item.phone?` · ${item.phone}`:''}</p></div><time className="text-xs text-[#71858b]">{new Date(item.createdAt).toLocaleString()}</time></div><p className="mt-3 whitespace-pre-wrap text-sm text-[#4d6871]">{item.message}</p></article>)}</div>}</section>}
+      {tab==='messages'&&<section className="soft-card mt-6 rounded-2xl p-5 sm:p-7"><p className="eyebrow">Practice enquiries</p><h2 className="mt-2 text-xl font-bold text-[#21485a]">Contact messages</h2>{contactMessages.isError?<ErrorPanel retry={()=>contactMessages.refetch()}/>:!contactMessages.data?.length?<p className="mt-5 rounded-xl bg-[#f1f6f5] p-5 text-sm text-[#6b8086]">{contactMessages.isLoading?'Loading protected messages…':'No contact messages are available.'}</p>:<div className="mt-5 space-y-3">{contactMessages.data.map(item=><article key={item.id} className="rounded-xl border border-[#dbe7e7] bg-white p-4"><div className="flex flex-wrap justify-between gap-3"><div><h3 className="font-bold text-[#234a5b]">{item.name} · {item.reference}</h3><p className="mt-1 text-sm text-[#5e747b]"><a className="underline" href={`mailto:${encodeURIComponent(item.email)}`}>{item.email}</a>{item.phone?` · ${item.phone}`:''}</p></div><time className="text-xs text-[#71858b]">{new Date(item.createdAt).toLocaleString()}</time></div>{item.service&&<p className="mt-3 text-xs font-bold uppercase tracking-wider text-[#397c72]">Enquiring about: {item.service}</p>}<p className="mt-3 whitespace-pre-wrap text-sm text-[#4d6871]">{item.message}</p></article>)}</div>}</section>}
       {tab==='notifications'&&<section className="soft-card mt-6 rounded-2xl p-5 sm:p-7"><p className="eyebrow">Delivery operations</p><h2 className="mt-2 text-xl font-bold text-[#21485a]">Notification attempts</h2><p className="mt-2 text-sm text-[#617981]">“Accepted” means Resend accepted the message; “delivered” is confirmed by the signed webhook.</p>{notificationQuery.isError?<ErrorPanel retry={()=>notificationQuery.refetch()}/>:!notificationQuery.data?.length?<p className="mt-5 rounded-xl bg-[#f1f6f5] p-5 text-sm text-[#6b8086]">{notificationQuery.isLoading?'Loading notification records…':'No notification records are available.'}</p>:<div className="mt-5 overflow-x-auto"><table className="w-full min-w-[700px] text-left text-sm"><thead className="border-b border-[#dce8e8] text-xs uppercase tracking-wider text-[#71858a]"><tr>{['Event','Recipient','Reference','Status','Attempts','Updated',''].map(x=><th className="px-3 py-3" key={x}>{x}</th>)}</tr></thead><tbody>{notificationQuery.data.map(n=><tr key={n.id} className="border-b border-[#e8eeee]"><td className="px-3 py-4">{n.event}</td><td className="px-3 py-4">{n.recipient}</td><td className="px-3 py-4">{n.entityReference}</td><td className="px-3 py-4"><span className="capitalize">{n.status.replace('_',' ')}</span>{n.lastError&&<span className="block max-w-xs text-xs text-[#975448]">{n.lastError}</span>}</td><td className="px-3 py-4">{n.attempts}</td><td className="px-3 py-4">{new Date(n.updatedAt).toLocaleString()}</td><td className="px-3 py-4">{!['accepted','delivered'].includes(n.status)&&<button className="text-xs font-bold text-[#176d70] underline" disabled={retryNotification.isPending} onClick={()=>retryNotification.mutate({notificationId:n.id},{onSuccess:()=>{void notificationQuery.refetch();setMessage('Notification retry requested.')},onError:adminError})}>Retry</button>}</td></tr>)}</tbody></table></div>}</section>}
     </div>
   </main>;
@@ -316,8 +400,9 @@ function AdminLoading(){return <main className="min-h-[100dvh] bg-[#eff5f5] p-6"
 function ErrorPanel({retry}:{retry:()=>void}) {return <div className="mt-5 rounded-xl border border-[#e7d2c9] bg-[#fcf5f2] p-4 text-sm text-[#794e42]">Records could not be loaded. <button className="ml-1 font-bold underline" onClick={retry}>Retry</button></div>}
 function AppointmentTable({items,empty,onCancel,onReschedule,onComplete}:{items:any[];empty:string;onCancel:(id:string)=>void;onReschedule?:(item:any)=>void;onComplete?:(id:string)=>void}) {return <div className="mt-5 overflow-x-auto">{items.length?<table className="w-full min-w-[860px] text-left text-sm"><thead className="border-b border-[#dce8e8] text-xs uppercase tracking-wider text-[#71858a]"><tr>{['Time','Patient','Location','Type','Status','Source',''].map(x=><th key={x} className="px-3 py-3">{x}</th>)}</tr></thead><tbody>{items.map(item=><tr key={item.id} className="border-b border-[#e8eeee]"><td className="px-3 py-4 font-semibold text-[#244b5b]">{item.date} · {item.time}</td><td className="px-3 py-4"><b>{item.patientName}</b><span className="block text-xs text-[#71858a]">{item.phone}</span></td><td className="px-3 py-4">{item.locationName}</td><td className="px-3 py-4">{item.appointmentType}</td><td className="px-3 py-4"><span className="rounded-full bg-[#e7f1ef] px-2.5 py-1 text-xs font-bold capitalize text-[#31746f]">{item.status}</span></td><td className="px-3 py-4 capitalize">{item.source}</td><td className="px-3 py-4"><div className="flex gap-2">{item.status!=='cancelled'&&item.status!=='completed'&&<><button className="text-xs font-bold text-[#176d70] underline" onClick={()=>onReschedule?.(item)}>Reschedule</button><button className="text-xs font-bold text-[#9b5147] underline" onClick={()=>onCancel(item.id)}>Cancel</button>{Date.parse(`${item.date}T${item.time}:00+05:30`)<=Date.now()&&<button className="text-xs font-bold text-[#176d70] underline" onClick={()=>onComplete?.(item.id)}>Complete</button>}</>}</div></td></tr>)}</tbody></table>:<p className="rounded-xl bg-[#f1f6f5] p-5 text-sm text-[#6b8086]">{empty}</p>}</div>}
 function PhoneBooking({locations,form,set,submit,pending}:{locations:ClinicLocation[];form:{locationId:string;date:string;slotId:string;patientName:string;phone:string;email:string;appointmentType:string;notes:string;internalNotes:string};set:(v:any)=>void;submit:(v:any)=>void;pending:boolean}) {
+  const clinicNow=useClinicNow();
   const params=useMemo(()=>({locationId:form.locationId,date:form.date}),[form.locationId,form.date]);const avail=useGetAvailability(params,{query:{enabled:!!form.locationId&&!!form.date,queryKey:getGetAvailabilityQueryKey(params)}});
-  return <form className="soft-card rounded-2xl p-5 sm:p-7" onSubmit={e=>{e.preventDefault();submit({...form,email:form.email||null})}}><p className="eyebrow">Phone booking</p><h2 className="mt-2 text-xl font-bold text-[#21485a]">Reserve a time by phone</h2><p className="mt-2 text-sm leading-6 text-[#657a80]">Uses the same live slot availability as online booking.</p><div className="mt-5 space-y-3"><select className="field" required value={form.locationId} onChange={e=>set({...form,locationId:e.target.value,slotId:''})}><option value="">Choose clinic</option>{locations.map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select><input className="field" type="date" required value={form.date} onChange={e=>set({...form,date:e.target.value,slotId:''})}/><select className="field" required value={form.slotId} onChange={e=>set({...form,slotId:e.target.value})}><option value="">Choose a published time</option>{avail.data?.slots.filter(s=>s.available).map(s=><option key={s.id} value={s.id}>{s.label}{s.emergency?' · Emergency':''}</option>)}</select>
+  return <form className="soft-card rounded-2xl p-5 sm:p-7" onSubmit={e=>{e.preventDefault();submit({...form,email:form.email||null})}}><p className="eyebrow">Phone booking</p><h2 className="mt-2 text-xl font-bold text-[#21485a]">Reserve a time by phone</h2><p className="mt-2 text-sm leading-6 text-[#657a80]">Uses the same live slot availability as online booking.</p><div className="mt-5 space-y-3"><select className="field" required value={form.locationId} onChange={e=>set({...form,locationId:e.target.value,slotId:''})}><option value="">Choose clinic</option>{locations.map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select><input className="field" type="date" required min={today(clinicNow)} value={form.date} onChange={e=>set({...form,date:e.target.value,slotId:''})}/><select className="field" required value={form.slotId} onChange={e=>set({...form,slotId:e.target.value})}><option value="">Choose a published time</option>{avail.data?.slots.filter(s=>s.available&&!isClinicSlotPast(form.date,s.id,clinicNow)).map(s=><option key={s.id} value={s.id}>{s.label}{s.emergency?' · Emergency':''}</option>)}</select>
     <input className="field" required minLength={2} placeholder="Patient name" value={form.patientName} onChange={e=>set({...form,patientName:e.target.value})}/><input className="field" required minLength={8} placeholder="Phone" value={form.phone} onChange={e=>set({...form,phone:e.target.value})}/><input className="field" type="email" placeholder="Email (optional)" value={form.email} onChange={e=>set({...form,email:e.target.value})}/><input className="field" required minLength={2} placeholder="Appointment type" value={form.appointmentType} onChange={e=>set({...form,appointmentType:e.target.value})}/><textarea className="field" placeholder="Internal notes (optional)" value={form.internalNotes} onChange={e=>set({...form,internalNotes:e.target.value})}/><button className="btn-primary w-full" disabled={pending||!form.slotId}>{pending?'Reserving…':'Reserve phone appointment'}</button></div></form>;
 }
 function ScheduleEditor({item,onSave}:{item:any;onSave:(hours:any[],duration:number)=>void}) {
@@ -339,7 +424,7 @@ function LocationManagement({locations,update}:{locations:ClinicLocation[];updat
 
 function Router() {
   const [location]=useLocation();
-  return <ErrorBoundary resetKey={location}><Switch><Route path="/" component={HomePage}/><Route path="/refer-a-patient" component={ReferralPage}/><Route path="/admin/login" component={AdminLogin}/><Route path="/admin" component={AdminDashboard}/><Route component={NotFound}/></Switch></ErrorBoundary>;
+  return <ErrorBoundary resetKey={location}><Switch><Route path="/" component={HomePage}/><Route path="/stories/:slug">{params=><PatientStoryPage slug={params.slug}/>}</Route><Route path="/refer-a-patient" component={ReferralPage}/><Route path="/admin/login" component={AdminLogin}/><Route path="/admin" component={AdminDashboard}/><Route component={NotFound}/></Switch></ErrorBoundary>;
 }
 function App() {return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/,'')}><Router/></WouterRouter><Toaster/></TooltipProvider></QueryClientProvider>;}
 export default App;

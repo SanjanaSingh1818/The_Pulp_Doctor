@@ -8,7 +8,19 @@ export interface ContactMessageDocument extends Document {
   email: string;
   phone: string | null;
   message: string;
+  service: string | null;
 }
+
+export const contactServiceOptions = [
+  "Root Canal Treatment",
+  "Dental Implants",
+  "Veneers & Crowns",
+  "Smile Designing",
+  "Teeth Cleaning",
+  "Oral Surgery",
+  "Teeth Whitening",
+  "Other / Not sure",
+] as const;
 
 const contactMessageSchema = new Schema<ContactMessageDocument>(
   {
@@ -17,6 +29,7 @@ const contactMessageSchema = new Schema<ContactMessageDocument>(
     email: { type: String, required: true, trim: true, lowercase: true },
     phone: { type: String, default: null },
     message: { type: String, required: true, trim: true },
+    service: { type: String, enum: contactServiceOptions, default: null },
   },
   { timestamps: true, strict: "throw" },
 );

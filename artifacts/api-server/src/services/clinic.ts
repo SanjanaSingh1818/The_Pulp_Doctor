@@ -12,6 +12,7 @@ import {
 } from "../models/clinic";
 
 const TIMEZONE_OFFSET_MINUTES = 330;
+const CLINIC_TIME_ZONE = "Asia/Kolkata";
 export const CLINIC_LOCATION_ORDER = [
   "gurugram-jcm",
   "model-town-delhi",
@@ -67,6 +68,39 @@ function localDayOfWeek(date: string): number {
 function timeToMinutes(time: string): number {
   const [hour, minute] = time.split(":").map(Number);
   return hour * 60 + minute;
+}
+
+function clinicLocalDateTime(now: Date): { date: string; time: string } {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: CLINIC_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(now);
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return {
+    date: `${values.year}-${values.month}-${values.day}`,
+    time: `${values.hour}:${values.minute}`,
+  };
+}
+
+export function isClinicSlotPast(
+  date: string,
+  time: string,
+  now: Date = new Date(),
+): boolean {
+  return isPastAtClinicLocalTime(date, time, clinicLocalDateTime(now));
+}
+
+function isPastAtClinicLocalTime(
+  date: string,
+  time: string,
+  localNow: { date: string; time: string },
+): boolean {
+  return date < localNow.date || (date === localNow.date && time < localNow.time);
 }
 
 function minutesToTime(total: number): string {
@@ -143,12 +177,7 @@ async function resolvePublishedSlots(
   }
 
   const day = localDayOfWeek(date);
-  const today = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Kolkata",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
+  const localNow = clinicLocalDateTime(new Date());
   const closed = overrides.some((override) => override.kind === "closed");
   if (closed) {
     return {
@@ -189,7 +218,10 @@ async function resolvePublishedSlots(
       )
     : [...baseSlots, ...extraTimes];
   const slotTimes = [...new Set(publishedTimes)]
-    .filter((slot) => !blockedTimes.has(slot))
+    .filter((slot) =>
+      !blockedTimes.has(slot) &&
+      !isPastAtClinicLocalTime(date, slot, localNow),
+    )
     .sort();
 
   return {
@@ -200,7 +232,7 @@ async function resolvePublishedSlots(
     emergencyTimes,
     unavailableReason:
       slotTimes.length === 0
-        ? today === date
+        ?         localNow.date === date
           ? "No published appointments remain for this clinic today."
           : "No appointments are published for this clinic on the selected date."
         : null,
@@ -275,13 +307,13 @@ export async function assertSlotIsPublished(
   session: import("mongoose").ClientSession,
 ): Promise<{ locationName: string; duration: number; startsAt: Date; endsAt: Date; emergency: boolean }> {
   const published = await resolvePublishedSlots(locationId, date, session);
+  if (isClinicSlotPast(date, slotId)) {
+    throw new SlotUnavailableError("Appointments must be booked for a future time.");
+  }
   if (!published.slotTimes.includes(slotId)) {
     throw new SlotUnavailableError("This time is not a published appointment slot.");
   }
   const start = localDateTimeToUtc(date, slotId);
-  if (start <= new Date()) {
-    throw new SlotUnavailableError("Appointments must be booked for a future time.");
-  }
   const duration = published.schedule?.slotDurationMinutes ?? 60;
   return {
     locationName: published.locationName,

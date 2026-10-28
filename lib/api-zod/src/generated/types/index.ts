@@ -33,6 +33,7 @@ export * from './clinicLocationInput';
 export * from './contactMessage';
 export * from './contactMessageConfirmation';
 export * from './contactMessageInput';
+export * from './contactMessageInputService';
 export * from './coronalRestoration';
 export * from './errorResponse';
 export * from './existingRestoration';

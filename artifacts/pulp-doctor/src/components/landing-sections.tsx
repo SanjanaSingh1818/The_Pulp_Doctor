@@ -242,19 +242,25 @@ export function HeroSection() {
       <div className="hero-grid relative z-10 mx-auto grid min-h-[615px] max-w-[1160px] items-center gap-12 py-14 md:grid-cols-[1.12fr_.88fr]">
         <Reveal className="hero-portrait-wrap relative mx-auto w-full max-w-[425px] md:order-2">
           <div className="absolute -right-8 -top-7 h-32 w-32 rounded-full border border-[#9bc8c5]/70" />
-          <div className="portrait-placeholder relative aspect-[.83] overflow-hidden rounded-t-[48%] rounded-b-[2rem] border-[10px] border-white/75 shadow-[0_24px_55px_rgba(31,76,83,.16)]">
-            <img
-              className="hero-portrait-image"
-              src={`${import.meta.env.BASE_URL}drcharu.jpeg`}
-              alt="Dr Charu Makhija"
-              fetchPriority="high"
-            />
-          </div>
-          <div className="hero-experience absolute -bottom-5 -left-4 rounded-2xl border border-[#d9e8e7] bg-white px-5 py-4 shadow-lg sm:-left-10">
-            <div className="serif text-3xl text-[#1c6570]">15+</div>
-            <div className="text-[.68rem] font-semibold uppercase tracking-wider text-[#627a81]">
-              years of experience
+          <div className="hero-portrait-frame relative">
+            <div className="portrait-placeholder relative aspect-[.83] overflow-hidden rounded-t-[48%] rounded-b-[2rem] border-[10px] border-white/75 shadow-[0_24px_55px_rgba(31,76,83,.16)]">
+              <img
+                className="hero-portrait-image"
+                src={`${import.meta.env.BASE_URL}drcharu.jpeg`}
+                alt="Dr Charu Makhija"
+                fetchPriority="high"
+              />
             </div>
+            <div className="hero-experience rounded-2xl border border-[#d9e8e7] bg-white px-5 py-4 shadow-lg">
+              <div className="serif text-3xl text-[#1c6570]">15+</div>
+              <div className="text-[.68rem] font-semibold uppercase tracking-wider text-[#627a81]">
+                years of experience
+              </div>
+            </div>
+          </div>
+          <div className="hero-doctor-caption">
+            <strong>Dr. Charu Makhija</strong>
+            <span>Restorative Dentist &amp; Endodontist</span>
           </div>
         </Reveal>
         <Reveal className="fade-up md:order-1">
@@ -262,7 +268,7 @@ export function HeroSection() {
           <h1 className="serif mt-6 max-w-[730px] text-[clamp(3.5rem,7.4vw,6.4rem)] leading-[.88] tracking-[-.025em] text-[#153d50]">
             Tooth pain?<br />Let&apos;s take<br /><em className="text-[#267d79]">care of you.</em>
           </h1>
-          <div className="hero-story-copy"><p>That lingering ache. The sip of tea that hurts. Another night of broken sleep. We know tooth pain can take over your day—and the thought of treatment can feel worrying, too.</p><p>You deserve to feel heard, understand what&apos;s happening, and find a way forward. Let&apos;s take the first step together.</p></div>
+          <div className="hero-story-copy"><p>That lingering ache. The sip of tea that hurts. Another night of broken sleep. We know tooth pain can take over your day and the thought of treatment can feel worrying, too.</p><p>You deserve to feel heard, understand what&apos;s happening, and find a way forward. Let&apos;s take the first step together.</p></div>
           <div className="hero-actions mt-8 flex flex-wrap gap-3">
             <a href="#book" className="btn-primary">
               Book an Appointment <ArrowRight size={17} />
@@ -302,7 +308,133 @@ export function RootCanalSection() {
 export function PatientJourneySection() {
   const steps = [["01", "First, we listen.", "Tell us what hurts, what worries you, and what you&apos;re hoping for. There&apos;s room for every question—even the one you feel nervous asking."], ["02", "Then, we make it clear.", "After examining your tooth, we talk through what&apos;s happening, your treatment options, and the next steps in everyday language."], ["03", "We plan care together.", "Your comfort and long-term oral health guide the plan. You&apos;ll know what to expect during treatment and how to care for your tooth afterwards."]];
   const [activeStep, setActiveStep] = useState(0);
-  return <section className="story-section patient-journey section-pad"><div className="mx-auto max-w-[1200px]"><p className="story-eyebrow">A LITTLE CLARITY CAN MAKE A BIG DIFFERENCE</p><h2 className="serif">You&apos;re a person.<br /><em>Not just a painful tooth.</em></h2><div className="journey-carousel"><div className="journey-track" style={{ transform: `translateX(-${activeStep * 100}%)` }}>{steps.map(([number, title, description]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{description}</p></article>)}</div><div className="journey-dots" role="tablist" aria-label="Care steps">{steps.map(([, title], index) => <button key={title} type="button" role="tab" aria-label={`Show step ${index + 1}: ${title}`} aria-selected={activeStep === index} className={activeStep === index ? "is-active" : ""} onClick={() => setActiveStep(index)} />)}</div></div><aside><HeartHandshake size={32} aria-hidden="true" /><div><strong>Nervous about the dental chair? You can tell us.</strong><p>You don&apos;t need to hide your worry or apologise for how long it&apos;s been. Let&apos;s begin with where you are today.</p></div></aside></div></section>;
+  return <section className="story-section patient-journey section-pad"><div className="mx-auto max-w-[1200px]"><p className="story-eyebrow">A LITTLE CLARITY CAN MAKE A BIG DIFFERENCE</p><h2 className="serif">You&apos;re a person.<br /><em>Not just a painful tooth.</em></h2><div className="journey-carousel"><div className="journey-track" style={{ transform: `translateX(-${activeStep * 100}%)` }}>{steps.map(([number, title, description]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{description}</p></article>)}</div><div className="journey-dots" role="tablist" aria-label="Care steps">{steps.map(([, title], index) => <button key={title} type="button" role="tab" aria-label={`Show step ${index + 1}: ${title}`} aria-selected={activeStep === index} className={activeStep === index ? "is-active" : ""} onClick={() => setActiveStep(index)} />)}</div></div></div></section>;
+}
+
+export const patientStories = [
+  {
+    slug: "toothache-root-canal",
+    category: "TOOTH PAIN",
+    title: "Does my toothache mean I need a root canal?",
+    excerpt: "That lingering ache can raise a lot of questions.",
+    image: "1st.jpeg",
+    imageAlt: "Woman holding her cheek while experiencing tooth pain",
+    cta: "Help me understand my tooth pain",
+    blocks: [
+      { type: "lead", text: "A toothache is a reason to get answers, not jump to conclusions." },
+      { type: "paragraph", text: "Perhaps your tea suddenly feels too hot. You’ve started chewing on the other side. Or an ache keeps returning just when you’re trying to sleep." },
+      { type: "paragraph", text: "It’s understandable to wonder, “Do I need a root canal?”" },
+      { type: "paragraph", text: "The answer is: not necessarily. Tooth pain can have different causes. Lingering sensitivity, pain when biting, or swelling near a tooth can signal a problem that needs a dental examination, but symptoms alone cannot tell you which treatment is right." },
+      { type: "paragraph", text: "Root canal treatment may help when the soft tissue inside your tooth becomes badly inflamed or infected. Its purpose is to treat the problem while preserving your natural tooth where possible." },
+      { type: "paragraph", text: "Your first step doesn’t have to be deciding on treatment. It can simply be finding out what’s happening." },
+      { type: "closing", text: "You don’t need to know what’s wrong before asking for help." },
+    ],
+  },
+  {
+    slug: "root-canal-comfort",
+    category: "DENTAL ANXIETY",
+    title: "Worried a root canal will hurt? Let’s talk about that.",
+    excerpt: "Understand how comfort is discussed and supported during treatment.",
+    image: "2nd.jpeg",
+    imageAlt: "Close-up of a woman holding her cheek because of tooth pain",
+    cta: "Talk to us about your concerns",
+    blocks: [
+      { type: "lead", text: "Sometimes, the worry takes up as much space as the toothache." },
+      { type: "paragraph", text: "You may have heard an unsettling story. Had a difficult dental visit before. Or simply feel uncomfortable not knowing what will happen." },
+      { type: "paragraph", text: "You can tell your dentist all of that." },
+      { type: "paragraph", text: "Root canal treatment is carried out with local anaesthetic to numb the area. You may notice pressure or movement, but if you feel pain, tell your dentist so they can respond." },
+      { type: "paragraph", text: "Before treatment, ask how your comfort will be checked and agree on a hand signal if you need a pause. Understanding the next step can make the experience feel more manageable." },
+      { type: "paragraph", text: "Some tenderness afterwards is common. Your dentist will explain what to expect and how to look after the tooth. Severe or worsening pain should be checked." },
+      { type: "closing", text: "You don’t have to feel fearless to take the first step. You just need somewhere to start." },
+    ],
+  },
+  {
+    slug: "first-consultation",
+    category: "YOUR FIRST VISIT",
+    title: "Your first consultation: you don’t need to have all the answers.",
+    excerpt: "A few things to bring, and questions you can ask at your visit.",
+    image: "3rd.jpg",
+    imageAlt: "Patient speaking with a dentist during a consultation",
+    cta: "Request a consultation",
+    blocks: [
+      { type: "lead", text: "That is enough to begin a conversation." },
+      { type: "paragraph", text: "Before your visit, it can help to think about:" },
+      { type: "list", items: [
+        "When the discomfort started.",
+        "Whether hot drinks, cold foods, or chewing trigger it.",
+        "Whether it interrupts your sleep.",
+        "Any swelling, recent dental work, or injury.",
+        "What worries you most about getting treatment.",
+      ] },
+      { type: "paragraph", text: "Bring any relevant dental records or X-rays you already have, along with a list of your medicines and allergies." },
+      { type: "paragraph", text: "Use the consultation to ask questions, too: What is causing the pain? What are my options? How many visits might I need? What will the complete treatment cost?" },
+      { type: "closing", text: "Booking a consultation is a step towards understanding your options. It isn’t consent to a procedure." },
+    ],
+  },
+] as const;
+
+type PatientStory = (typeof patientStories)[number];
+type PatientStoryBlock = PatientStory["blocks"][number];
+
+export function PatientStoriesSection() {
+  const [featured, ...secondary] = patientStories;
+  return (
+    <section id="stories" className="patient-stories section-pad">
+      <div className="stories-inner">
+        <div className="stories-heading">
+          <p className="eyebrow">A LITTLE CLARITY BEFORE YOUR VISIT</p>
+          <h2 className="serif">Stories you might see yourself in.</h2>
+          <p>Real questions. Familiar worries. Simple explanations to help you feel more confident about your dental care.</p>
+          <small>Illustrative patient guides, not real patient accounts or testimonials.</small>
+        </div>
+        <div className="stories-grid">
+          <Link className="story-featured-card" href={`/stories/${featured.slug}`}>
+            <div className="story-featured-image">
+              <img src={`${import.meta.env.BASE_URL}${featured.image}`} alt={featured.imageAlt} loading="lazy" />
+            </div>
+            <div className="story-card-copy">
+              <p className="story-category">{featured.category} <span>· 2 MIN READ</span></p>
+              <h3>{featured.title}</h3>
+              <p>{featured.excerpt}</p>
+              <span className="story-read-link">Read the story <ArrowRight size={16} aria-hidden="true" /></span>
+            </div>
+          </Link>
+          <div className="story-secondary-stack">
+            {secondary.map((story) => (
+              <Link key={story.slug} className="story-secondary-card" href={`/stories/${story.slug}`}>
+                <img src={`${import.meta.env.BASE_URL}${story.image}`} alt={story.imageAlt} loading="lazy" />
+                <div className="story-card-copy">
+                  <p className="story-category">{story.category} <span>· 2 MIN READ</span></p>
+                  <h3>{story.title}</h3>
+                  <p>{story.excerpt}</p>
+                  <span className="story-read-link">Read the story <ArrowRight size={16} aria-hidden="true" /></span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function PatientStoryContent({ blocks }: { blocks: readonly PatientStoryBlock[] }) {
+  return (
+    <>
+      {blocks.map((block, index) => {
+        switch (block.type) {
+          case "lead":
+            return <p className="story-article-lead" key={index}>{block.text}</p>;
+          case "paragraph":
+            return <p key={index}>{block.text}</p>;
+          case "closing":
+            return <p className="story-article-closing" key={index}>{block.text}</p>;
+          case "list":
+            return <ul key={index}>{block.items.map((item) => <li key={item}>{item}</li>)}</ul>;
+        }
+      })}
+    </>
+  );
 }
 
 export function WorriesSection() {
