@@ -264,7 +264,7 @@ export async function notifyAppointment(
   change?: "cancelled" | "rescheduled",
 ): Promise<NotificationStatus> {
   const id = String(appointment._id);
-  const doctorEmail = process.env.DOCTOR_EMAIL || "drcharu.25@gmail.com";
+  const doctorEmail = process.env.DOCTOR_EMAIL || "care@thepulpdoctor.com";
   const doctorStatus = await sendNotification({
     entityType: "appointment",
     entityId: id,
@@ -293,7 +293,7 @@ export async function notifyReferral(referral: {
   dentistEmail: string;
 }): Promise<NotificationStatus> {
   const id = String(referral._id);
-  const doctorEmail = process.env.DOCTOR_EMAIL || "drcharu.25@gmail.com";
+  const doctorEmail = process.env.DOCTOR_EMAIL || "care@thepulpdoctor.com";
   await sendNotification({
     entityType: "referral",
     entityId: id,
@@ -321,7 +321,7 @@ export async function notifyContactMessage(contact: {
       entityId: String(contact._id),
       entityReference: contact.reference,
       event: "contact.doctor_new",
-      recipient: process.env.DOCTOR_EMAIL || "drcharu.25@gmail.com",
+      recipient: process.env.DOCTOR_EMAIL || "care@thepulpdoctor.com",
     })
   ).status;
 }

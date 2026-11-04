@@ -170,7 +170,6 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const links = [
     ["About", "/about"],
-    ["Treatments", "/treatments"],
     ["Locations", "/locations"],
     ["Contact", "/contact"],
     ["Book appointment", "/book"],
@@ -185,6 +184,15 @@ export function SiteHeader() {
         <div className="header-inner">
           <Brand />
           <nav className="desktop-nav" aria-label="Main navigation">
+            <div className="service-nav-dropdown">
+              <Link href="/treatments" className="nav-link">Services <ChevronDown size={15} aria-hidden="true" /></Link>
+              <div className="service-nav-menu">
+                <Link href="/treatments" className="service-nav-item service-nav-all">All services <ArrowRight size={14} aria-hidden="true" /></Link>
+                {services.map(({ name, slug }) => (
+                  <Link key={slug} href={`/treatments/${slug}`} className="service-nav-item">{name}</Link>
+                ))}
+              </div>
+            </div>
             {links.map(([label, href]) =>
               <Link
                   className={label === "Book appointment" || label === "For dentists"
@@ -210,6 +218,15 @@ export function SiteHeader() {
         </div>
         {open && (
           <nav className="mobile-nav" aria-label="Mobile navigation">
+            <details className="mobile-service-menu">
+              <summary>Services <ChevronDown size={16} aria-hidden="true" /></summary>
+              <div>
+                <Link href="/treatments" onClick={() => setOpen(false)}>All services</Link>
+                {services.map(({ name, slug }) => (
+                  <Link key={slug} href={`/treatments/${slug}`} onClick={() => setOpen(false)}>{name}</Link>
+                ))}
+              </div>
+            </details>
             {links.map(([label, href]) =>
                 <Link key={label} href={href} onClick={() => setOpen(false)}>
                   {label}
@@ -1108,7 +1125,7 @@ export function SiteFooter() {
         </div>
         <div className="footer-details">
           <div><p className="eyebrow !text-[#8fd0c7]">PREFER TO CALL?</p>{callUrl && <a className="footer-contact-link" href={callUrl}>+91 8448 500405 <MoveUpRight size={17} /></a>}</div>
-          <div><p className="eyebrow !text-[#8fd0c7]">OR WRITE TO US</p><a className="footer-contact-link" href="mailto:drcharu.25@gmail.com">drcharu.25@gmail.com <MoveUpRight size={17} /></a></div>
+          <div><p className="eyebrow !text-[#8fd0c7]">OR WRITE TO US</p><a className="footer-contact-link" href="mailto:care@thepulpdoctor.com">care@thepulpdoctor.com <MoveUpRight size={17} /></a></div>
           <p className="footer-doctor">Dr. Charu Makhija · The Pulp Doctor<br />SPECIALIST DENTAL CARE · DELHI NCR</p>
           <nav className="footer-links" aria-label="Footer navigation"><Link href="/about">About Dr Makhija</Link><Link href="/treatments">Treatments</Link><Link href="/refer-a-patient">Refer a patient</Link><Link href="/book">Appointments</Link><Link href="/locations">Clinic locations</Link><Link href="/contact">Contact</Link></nav>
           <p className="footer-urgent"><strong>Need urgent help?</strong> Facial or neck swelling, rapidly worsening symptoms, or swelling with fever needs urgent assessment. Difficulty breathing or swallowing requires emergency medical care.</p>
