@@ -94,6 +94,15 @@ html { scroll-padding-top:5.5rem; }
 .treatment-reference-card:first-child img { object-fit:contain;padding:.5rem; }
 .treatment-reference-card h3 { margin:1px 0 9px;color:#12385b;font-size:19px;font-weight:700;line-height:1.35; }
 .treatment-reference-card p { margin:0;color:#40536b;font-size:15px;line-height:1.65; }
+.treatment-detail { margin-top:24px;padding:clamp(22px,4vw,48px);border:1px solid rgba(23,63,81,.08);border-radius:20px;background:#fff;box-shadow:0 3px 14px rgba(23,63,81,.035); }
+.treatment-detail h1 { color:#12385b;font-family:var(--app-font-serif);font-size:clamp(1.9rem,3.8vw,3rem);line-height:1.08;letter-spacing:-.025em; }
+.treatment-back-link { display:inline-flex;color:#245366;font-size:.95rem;font-weight:700;text-decoration:underline;text-underline-offset:4px; }
+.treatment-detail-copy { max-width:860px;margin-top:22px;color:#40536b;font-size:16px;line-height:1.8; }
+.treatment-detail-copy p { margin-top:14px; }
+.treatment-detail-copy p:first-child { margin-top:0; }
+.treatment-detail-copy h3 { margin-top:25px;color:#214b5c;font-size:1.08rem;font-weight:700;line-height:1.4; }
+.treatment-detail-note { max-width:860px;margin-top:20px;color:#71534a;font-size:.92rem;font-style:italic;line-height:1.7; }
+.treatment-detail-cta { margin-top:24px; }
 .services-section { background:#ebf5f5; }
 .services-heading { display:flex;align-items:end;justify-content:space-between;gap:2rem;margin-bottom:2.25rem; }
 .services-heading h2 { margin-top:.7rem;color:#102d44;font-size:clamp(2.7rem,5vw,4.4rem);line-height:.9;letter-spacing:-.035em; }
@@ -447,4 +456,70 @@ html { scroll-padding-top:5.5rem; }
 @media(prefers-reduced-motion:reduce) {
   .reveal,.reveal.is-visible { opacity:1;transform:none;transition:none; }
   .hero-tooth,.booking-aside-art img,.urgent-sticker { animation:none; }
+}
+
+.treatment-detail-section { padding-top:2.5rem;padding-bottom:6rem;background:linear-gradient(180deg,#edf4f1 0%,#f6f7f2 54%); }
+.treatment-detail-section .treatments-reference-inner { max-width:1180px; }
+.treatment-detail-section .treatment-back-link { align-items:center;gap:.45rem;color:#34786f;font-size:.84rem;text-decoration:none; }
+.treatment-detail-section .treatment-back-link:hover { color:#153d50;text-decoration:underline;text-underline-offset:4px; }
+.treatment-detail-section .treatment-detail { margin-top:1.15rem;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none; }
+.treatment-detail-hero { display:grid;grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);align-items:center;gap:clamp(2rem,6vw,5.5rem);padding:clamp(1.6rem,5vw,4.2rem);overflow:hidden;border:1px solid #dce8df;border-radius:1.8rem;background:radial-gradient(ellipse at 86% 16%,#c9e2d670,transparent 37%),linear-gradient(120deg,#fbfcf8 0%,#f1f6f0 100%);box-shadow:0 16px 48px #18394a0c; }
+.treatment-detail-intro { max-width:610px; }
+.treatment-detail-intro .eyebrow { color:#44887c; }
+.treatment-detail h1 { margin-top:1rem;color:#15394b;font-family:var(--app-font-serif);font-size:clamp(2.8rem,5.2vw,5.2rem);font-weight:400;line-height:.96;letter-spacing:-.035em; }
+.treatment-detail-summary { max-width:470px;margin-top:1.1rem;color:#5a7376;font-size:1.03rem;line-height:1.7; }
+.treatment-care-points { display:grid;gap:.7rem;margin-top:1.7rem;color:#315d5b;font-size:.83rem;font-weight:600; }
+.treatment-care-points li { display:flex;align-items:center;gap:.6rem; }
+.treatment-care-points svg { flex:none;color:#37867b; }
+.treatment-detail-visual { position:relative;min-height:350px;display:grid;place-items:center;overflow:hidden;border:1px solid #d7e5dc;border-radius:1.45rem;background:radial-gradient(circle at 50% 45%,#fff 0%,#f7faf6 48%,#deebe4 100%); }
+.treatment-detail-visual:before,.treatment-detail-visual:after { position:absolute;content:"";border:1px solid #98bdb344;border-radius:50%;pointer-events:none; }
+.treatment-detail-visual:before { width:78%;aspect-ratio:1; }
+.treatment-detail-visual:after { width:60%;aspect-ratio:1; }
+.treatment-detail-visual img { position:relative;z-index:1;width:min(78%,330px);height:280px;object-fit:contain;filter:drop-shadow(0 18px 20px #284d4b20); }
+.treatment-visual-caption { position:absolute;z-index:2;right:1rem;bottom:1rem;left:1rem;display:flex;align-items:center;gap:.6rem;padding:.8rem 1rem;border:1px solid #e0e9e2;border-radius:.85rem;background:#ffffffed;color:#315d5b;font-size:.78rem;font-weight:700;box-shadow:0 6px 18px #18394a0d; }
+.treatment-visual-caption svg { flex:none;color:#43897e; }
+.treatment-detail-layout { display:grid;grid-template-columns:minmax(0,1.55fr) minmax(270px,.65fr);align-items:start;gap:clamp(1.2rem,3vw,2.4rem);margin-top:1.5rem; }
+.treatment-detail-copy { max-width:none;margin:0;padding:clamp(1.5rem,3vw,2.7rem);border:1px solid #e0e8e1;border-radius:1.3rem;background:#fffefa;color:#50666b;font-size:.97rem;line-height:1.85;box-shadow:0 10px 32px #18394a08; }
+.treatment-detail-copy p { margin-top:1rem; }
+.treatment-detail-copy p:first-child { margin-top:0;color:#31535b;font-family:var(--app-font-serif);font-size:1.28rem;line-height:1.6; }
+.treatment-detail-copy h3 { display:flex;align-items:center;gap:.75rem;margin-top:2rem;padding-top:1.25rem;border-top:1px solid #e5ece6;color:#214b50;font-size:1.02rem;font-weight:700;line-height:1.45; }
+.treatment-detail-copy h3:before { content:"";width:9px;height:9px;flex:none;border-radius:50%;background:#61a89a;box-shadow:0 0 0 5px #e6f1e9; }
+.treatment-consultation-card { position:sticky;top:6rem;padding:1.5rem;border:1px solid #d6e5dc;border-radius:1.2rem;background:linear-gradient(160deg,#eaf3ed,#f8f8f2);color:#516a6b;box-shadow:0 10px 28px #18394a0a; }
+.treatment-consultation-icon { width:44px;height:44px;display:grid;place-items:center;margin-bottom:1.15rem;border-radius:50%;background:#d7e9dd;color:#34786f; }
+.treatment-consultation-card .eyebrow { font-size:.62rem; }
+.treatment-consultation-card h2 { margin-top:.5rem;color:#173f4c;font-size:2rem;line-height:1.02; }
+.treatment-consultation-card>p:not(.eyebrow) { margin-top:.8rem;font-size:.82rem;line-height:1.7; }
+.treatment-consultation-card ul { display:grid;gap:.7rem;margin-top:1.2rem;padding-top:1.1rem;border-top:1px solid #d3e2d8;font-size:.76rem;line-height:1.5; }
+.treatment-consultation-card li { display:flex;align-items:flex-start;gap:.5rem; }
+.treatment-consultation-card li svg { flex:none;margin-top:.12rem;color:#43897e; }
+.treatment-consultation-card .btn-outline { width:100%;margin-top:1.35rem;padding:.75rem .8rem;font-size:.79rem; }
+.treatment-detail-note { max-width:none;display:flex;align-items:flex-start;gap:.75rem;margin-top:1.5rem;padding:1rem 1.15rem;border:1px solid #e9d9c8;border-radius:.85rem;background:#fbf4e9;color:#765a45;font-size:.83rem;font-style:normal;line-height:1.65; }
+.treatment-detail-note svg { flex:none;margin-top:.1rem;color:#b07d4c; }
+.treatment-detail-cta-panel { display:flex;align-items:center;justify-content:space-between;gap:1.5rem;margin-top:1.5rem;padding:clamp(1.5rem,4vw,2.6rem);border-radius:1.25rem;background:radial-gradient(ellipse at 88% 20%,#2d6d6c 0%,transparent 42%),linear-gradient(110deg,#14394e,#174c5a);color:#fff; }
+.treatment-detail-cta-panel .eyebrow { color:#9bd3c5; }
+.treatment-detail-cta-panel h2 { max-width:560px;margin-top:.55rem;color:#fff;font-size:clamp(1.8rem,3.2vw,2.8rem);line-height:1.03; }
+.treatment-detail-cta-panel .treatment-detail-cta { flex:none;margin:0;background:#e6f2e9;color:#173f4c; }
+.treatment-detail-cta-panel .treatment-detail-cta:hover { background:#fff; }
+@media(max-width:900px) {
+  .treatment-detail-hero { grid-template-columns:minmax(0,1fr) minmax(260px,.8fr);gap:1.5rem;padding:2rem; }
+  .treatment-detail-visual { min-height:300px; }
+  .treatment-detail-layout { grid-template-columns:minmax(0,1fr) minmax(235px,.72fr);gap:1rem; }
+  .treatment-consultation-card { padding:1.2rem; }
+}
+@media(max-width:680px) {
+  .treatment-detail-section { padding:1.5rem 1rem 3.5rem; }
+  .treatment-detail-hero { grid-template-columns:1fr;gap:1.5rem;padding:1.4rem;border-radius:1.3rem; }
+  .treatment-detail h1 { margin-top:.75rem;font-size:clamp(2.7rem,12vw,4rem); }
+  .treatment-detail-summary { font-size:.94rem; }
+  .treatment-care-points { gap:.6rem;margin-top:1.25rem;font-size:.77rem; }
+  .treatment-detail-visual { min-height:250px;border-radius:1rem; }
+  .treatment-detail-visual img { width:min(72%,260px);height:205px; }
+  .treatment-visual-caption { right:.7rem;bottom:.7rem;left:.7rem;padding:.7rem .8rem;font-size:.73rem; }
+  .treatment-detail-layout { grid-template-columns:1fr;gap:.85rem;margin-top:.85rem; }
+  .treatment-detail-copy { padding:1.25rem;font-size:.91rem;line-height:1.8; }
+  .treatment-detail-copy p:first-child { font-size:1.15rem; }
+  .treatment-detail-copy h3 { margin-top:1.6rem;padding-top:1rem;font-size:.97rem; }
+  .treatment-consultation-card { position:static;padding:1.25rem; }
+  .treatment-detail-cta-panel { align-items:stretch;flex-direction:column;margin-top:.85rem;padding:1.35rem; }
+  .treatment-detail-cta-panel .treatment-detail-cta { width:100%;text-align:center; }
 }

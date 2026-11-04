@@ -27,7 +27,7 @@ import {
   Printer, AlertCircle, ClipboardList, MoveUpRight,
 } from 'lucide-react';
 import NotFound from '@/pages/not-found';
-import { AboutSection, Brand, DentistReferralSection, EnquiryLink, HeroSection, PatientJourneySection, PatientStoriesSection, PatientStoryContent, PublicUtilityControls, Reveal, RootCanalSection, SiteFooter, SiteHeader, SymptomsSection, TreatmentsSection, patientStories } from '@/components/landing-sections';
+import { AboutSection, Brand, DentistReferralSection, EnquiryLink, HeroSection, PatientJourneySection, PatientStoriesSection, PatientStoryContent, PublicUtilityControls, Reveal, RootCanalSection, SiteFooter, SiteHeader, SymptomsSection, TreatmentDetailPage, TreatmentsSection, patientStories } from '@/components/landing-sections';
 
 const queryClient = new QueryClient();
 const locationDisplayOrder = ['gurugram-jcm', 'model-town-delhi', 'karol-bagh-delhi'];
@@ -55,9 +55,8 @@ const contactServices = [
   'Root Canal Treatment',
   'Dental Implants',
   'Veneers & Crowns',
-  'Smile Designing',
-  'Teeth Cleaning',
-  'Oral Surgery',
+  'Smile Designing / Invisalign',
+  'Oral Surgery and Wisdom Tooth Removal',
   'Teeth Whitening',
   'Other / Not sure',
 ] as const;
@@ -289,6 +288,10 @@ function TreatmentsPage() {
   return <Shell><main><TreatmentsSection/><section className="section-pad text-center"><h2 className="serif text-4xl text-[#193f51]">Have questions about a treatment?</h2><Link className="btn-primary mt-5" href="/book">Request an appointment <ArrowRight size={16}/></Link></section></main></Shell>;
 }
 
+function TreatmentPage({ slug }: { slug: string }) {
+  return <Shell><TreatmentDetailPage slug={slug}/></Shell>;
+}
+
 function LocationsPage() {
   const locationsQuery = useListLocations();
   const locations = inDoctorPreferredOrder(locationsQuery.data);
@@ -447,7 +450,7 @@ function Router() {
   useLayoutEffect(() => {
     if (!location.includes('#')) window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [location]);
-  return <ErrorBoundary resetKey={location}><Switch><Route path="/" component={HomePage}/><Route path="/about" component={AboutPage}/><Route path="/treatments" component={TreatmentsPage}/><Route path="/locations" component={LocationsPage}/><Route path="/book" component={BookingPage}/><Route path="/contact" component={ContactPage}/><Route path="/stories/:slug">{params=><PatientStoryPage slug={params.slug}/>}</Route><Route path="/refer-a-patient" component={ReferralPage}/><Route path="/admin/login" component={AdminLogin}/><Route path="/admin" component={AdminDashboard}/><Route component={NotFound}/></Switch></ErrorBoundary>;
+  return <ErrorBoundary resetKey={location}><Switch><Route path="/" component={HomePage}/><Route path="/about" component={AboutPage}/><Route path="/treatments/:slug">{params=><TreatmentPage slug={params.slug}/>}</Route><Route path="/treatments" component={TreatmentsPage}/><Route path="/locations" component={LocationsPage}/><Route path="/book" component={BookingPage}/><Route path="/contact" component={ContactPage}/><Route path="/stories/:slug">{params=><PatientStoryPage slug={params.slug}/>}</Route><Route path="/refer-a-patient" component={ReferralPage}/><Route path="/admin/login" component={AdminLogin}/><Route path="/admin" component={AdminDashboard}/><Route component={NotFound}/></Switch></ErrorBoundary>;
 }
 function App() {return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/,'')}><Router/></WouterRouter><Toaster/></TooltipProvider></QueryClientProvider>;}
 export default App;

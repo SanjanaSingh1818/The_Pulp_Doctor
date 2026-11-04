@@ -13,9 +13,8 @@ export const ContactMessageInputService = {
   Root_Canal_Treatment: 'Root Canal Treatment',
   Dental_Implants: 'Dental Implants',
   'Veneers_&_Crowns': 'Veneers & Crowns',
-  Smile_Designing: 'Smile Designing',
-  Teeth_Cleaning: 'Teeth Cleaning',
-  Oral_Surgery: 'Oral Surgery',
+  'Smile_Designing_/_Invisalign': 'Smile Designing / Invisalign',
+  Oral_Surgery_and_Wisdom_Tooth_Removal: 'Oral Surgery and Wisdom Tooth Removal',
   Teeth_Whitening: 'Teeth Whitening',
   'Other_/_Not_sure': 'Other / Not sure',
 } as const;

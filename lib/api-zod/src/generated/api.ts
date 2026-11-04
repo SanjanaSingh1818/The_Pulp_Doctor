@@ -61,7 +61,7 @@ export const CreateContactMessageBody = zod.object({
   "email": zod.string().email(),
   "phone": zod.string().max(createContactMessageBodyPhoneMax).nullish(),
   "message": zod.string().min(createContactMessageBodyMessageMin).max(createContactMessageBodyMessageMax),
-  "service": zod.enum(['Root Canal Treatment', 'Dental Implants', 'Veneers & Crowns', 'Smile Designing', 'Teeth Cleaning', 'Oral Surgery', 'Teeth Whitening', 'Other / Not sure']).optional()
+  "service": zod.enum(['Root Canal Treatment', 'Dental Implants', 'Veneers & Crowns', 'Smile Designing / Invisalign', 'Oral Surgery and Wisdom Tooth Removal', 'Teeth Whitening', 'Other / Not sure']).optional()
 })
 
 export const CreateContactMessageResponse = zod.object({

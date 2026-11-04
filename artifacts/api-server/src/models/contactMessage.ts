@@ -15,9 +15,8 @@ export const contactServiceOptions = [
   "Root Canal Treatment",
   "Dental Implants",
   "Veneers & Crowns",
-  "Smile Designing",
-  "Teeth Cleaning",
-  "Oral Surgery",
+  "Smile Designing / Invisalign",
+  "Oral Surgery and Wisdom Tooth Removal",
   "Teeth Whitening",
   "Other / Not sure",
 ] as const;

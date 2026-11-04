@@ -535,39 +535,372 @@ export function AboutSection({ compact = false }: { compact?: boolean }) {
 const services = [
   {
     name: "Root Canal Treatment",
-    description:
-      "Help for tooth pain, infection, and damaged teeth while preserving the natural tooth where possible.",
+    description: "Treatment options for a painful or damaged tooth.",
     image: "/root.png",
+    slug: "root-canal-treatment",
   },
   {
     name: "Dental Implants",
-    description: "Options for replacing missing teeth.",
+    description: "Options for replacing a missing tooth.",
     image: "/dentalimp.png",
+    slug: "dental-implants",
   },
   {
     name: "Veneers & Crowns",
-    description: "Restoring the appearance, shape, or strength of teeth.",
+    description: "Options for chipped, broken or weakened teeth.",
     image: "/veneer.png",
+    slug: "veneers-and-crowns",
   },
   {
-    name: "Smile Designing",
-    description: "Personalised options for improving smile aesthetics.",
+    name: "Smile Designing / Invisalign",
+    description: "Planning changes to your smile, including orthodontic options.",
     image: "/smiling.png",
-  },
-  {
-    name: "Teeth Cleaning",
-    description: "Professional removal of plaque and tartar.",
-    image: "/teethcleaning.png",
+    slug: "smile-designing",
   },
   {
     name: "Teeth Whitening",
-    description: "Options for improving tooth discolouration.",
+    description: "Professional options for changing the shade of natural teeth.",
     image: "/teethwhite.svg",
+    slug: "teeth-whitening",
   },
   {
-    name: "Oral Surgery",
-    description: "Surgical dental treatment when clinically indicated.",
+    name: "Oral Surgery and Wisdom Tooth Removal",
+    description: "Assessment and treatment options for troublesome wisdom teeth.",
     image: "/oral.png",
+    slug: "oral-surgery-and-wisdom-tooth-removal",
+  },
+];
+
+const treatmentDetails = [
+  {
+    slug: "root-canal-treatment",
+    heading: "Root Canal Treatment for a Painful Tooth",
+    content: (
+      <>
+        <p>
+          If you have started letting your tea cool before you drink it, chewing
+          on one side, or waking at night with a toothache, it is worth having
+          the tooth examined. You can describe what you feel even if you cannot
+          point to the exact tooth. Knowing what brings the pain on and how long
+          it lasts helps your dentist find the cause.
+        </p>
+        <h3>When might root canal treatment help?</h3>
+        <p>
+          Inside each tooth is soft tissue called the pulp. Deep decay, a crack
+          or an injury can damage this tissue. If the pulp is infected or too
+          inflamed to recover, root canal treatment may allow you to keep the
+          tooth. An examination and, when needed, an X-ray help your dentist
+          assess whether the tooth can be restored or whether another treatment
+          would be more suitable.
+        </p>
+        <h3>What happens during treatment?</h3>
+        <p>
+          Your dentist numbs the tooth, removes the damaged tissue, cleans the
+          small channels inside the roots and seals them. A permanent filling
+          or crown then protects the tooth when you chew. Treatment may take
+          more than one visit, depending on the tooth and its condition.
+        </p>
+        <h3>What should you know before deciding?</h3>
+        <p>
+          You may feel pressure during treatment. If you feel pain, tell your
+          dentist so they can address it. If you are anxious, you can agree on
+          a hand signal to pause before treatment begins. Some tenderness
+          afterwards is common. Contact the practice if pain worsens, swelling
+          develops or your temporary filling comes out.
+        </p>
+        <p>
+          Ask for an estimate that includes the final filling or crown. This
+          gives you a clearer picture of both the cost and the number of
+          appointments. Antibiotics alone cannot remove the source of infection
+          inside a tooth.
+        </p>
+        <p>
+          If tooth pain is affecting your meals or sleep, Dr. Charu Makhija can
+          assess what is causing it and explain the options for saving the
+          tooth.
+        </p>
+      </>
+    ),
+    cta: "Request a tooth pain consultation",
+    note: "Tooth pain with facial swelling or fever needs urgent dental assessment. If you have difficulty breathing or swallowing, seek emergency medical care immediately.",
+  },
+  {
+    slug: "dental-implants",
+    heading: "Dental Implants for Missing Teeth",
+    content: (
+      <>
+        <p>
+          After losing a tooth, you may gradually change the way you eat without
+          noticing. You chew on the other side or leave certain foods on your
+          plate. If replacing the tooth would make meals easier, a consultation
+          can help you compare an implant with a bridge or a removable denture.
+        </p>
+        <h3>When might a dental implant help?</h3>
+        <p>
+          A dental implant is a small post placed in the jawbone to support a
+          replacement tooth. For a single missing tooth, the visible part is a
+          crown made to fit the gap. An implant can be particularly useful when
+          the teeth on either side are healthy because they usually do not need
+          to be reshaped to support the replacement.
+        </p>
+        <p>
+          Your dentist checks your gums, the available bone and your medical
+          history before recommending treatment. Tell them about your
+          medicines, any health conditions and whether you smoke, as these can
+          affect healing. Some patients need gum treatment or a bone graft
+          first.
+        </p>
+        <h3>What happens during treatment?</h3>
+        <p>
+          The implant is usually placed under local anaesthetic. The bone then
+          heals around it before the final tooth is fitted. This can take
+          several months. If the gap shows when you smile, ask whether a
+          temporary tooth is suitable while you heal.
+        </p>
+        <h3>What should you know before deciding?</h3>
+        <p>
+          Soreness and swelling can occur after placement. Your dentist can
+          explain what to eat, how to clean the area and when you can return to
+          your usual activities. An implant needs daily cleaning and regular
+          reviews. Occasionally it does not heal firmly into the bone, and
+          parts of the replacement tooth may loosen or need replacement over
+          time.
+        </p>
+        <p>
+          When comparing fees, ask whether the estimate includes the implant,
+          its connector, the crown, imaging and any additional procedures.
+          Bring your main priority to the consultation, whether that is chewing
+          comfortably, having a fixed tooth or finding an option within your
+          budget.
+        </p>
+      </>
+    ),
+    cta: "Discuss options for my missing tooth with Dr. Makhija",
+  },
+  {
+    slug: "veneers-and-crowns",
+    heading: "Veneers and Crowns for Chipped or Damaged Teeth",
+    content: (
+      <>
+        <p>
+          A small chip on a front tooth and a broken corner on a back tooth can
+          both leave a rough edge that catches your tongue. They may need quite
+          different repairs. The first question is how much healthy tooth
+          remains and what you need the repair to do.
+        </p>
+        <h3>When might a veneer or crown help?</h3>
+        <p>
+          A <strong>veneer</strong> is a thin covering bonded to the front of a
+          tooth. It may help with certain concerns about shape, colour or a
+          chipped edge. A <strong>crown</strong>, sometimes called a cap, covers
+          the tooth more fully. It may be recommended when a tooth is weakened,
+          has broken or has too little structure to support a large filling.
+        </p>
+        <p>
+          For a small chip, tooth-coloured bonding or a filling may be
+          sufficient. Ask what can be achieved while preserving as much of your
+          natural tooth as possible.
+        </p>
+        <h3>What happens during treatment?</h3>
+        <p>
+          Your dentist examines the tooth, gums and bite, then discusses the
+          material, shape and shade with you. If the restoration is made in a
+          laboratory, an impression or scan is taken. You may wear a temporary
+          restoration before the final one is checked and fitted. Some
+          composite repairs can be completed in fewer visits.
+        </p>
+        <h3>What should you know before deciding?</h3>
+        <p>
+          Crowns require tooth reshaping, and many veneers require some enamel
+          removal. Those changes are permanent. Ask your dentist to show you
+          where preparation is needed and explain why. If your priority is for
+          a front tooth to blend in with its neighbours, say so when discussing
+          the shade.
+        </p>
+        <p>
+          Some sensitivity may follow treatment. Let the practice know if the
+          tooth remains painful or feels higher than the others when you bite.
+          Veneers and crowns need cleaning and may eventually need repair or
+          replacement. Your estimate should identify the material, the number
+          of teeth and any care needed before fitting.
+        </p>
+      </>
+    ),
+    cta: "Book an assessment for a chipped or damaged tooth",
+  },
+  {
+    slug: "teeth-whitening",
+    heading: "Teeth Whitening and What It Can Achieve",
+    content: (
+      <>
+        <p>
+          Before buying another whitening product, consider what you would like
+          to change. Is it the brown staining left by tea or coffee? An overall
+          darkening over the years? Or one front tooth that looks different
+          from its neighbour? Each calls for a different assessment.
+        </p>
+        <h3>When might whitening help?</h3>
+        <p>
+          Professional cleaning can remove some stains from the tooth surface.
+          Whitening gel works differently by lightening the colour of natural
+          teeth. If one tooth has become darker, particularly after an injury,
+          it should be examined before choosing a cosmetic treatment.
+        </p>
+        <p>
+          Crowns, veneers and tooth-coloured fillings retain their existing
+          shade during whitening. If you have a visible filling on a front
+          tooth, ask how the colour may look afterwards. This is easier to plan
+          for before treatment begins.
+        </p>
+        <h3>What happens during treatment?</h3>
+        <p>
+          Your dentist first checks that your teeth and gums are healthy enough
+          for whitening. Depending on your needs and the options available,
+          treatment may involve an in-clinic appointment or dentist-supervised
+          home whitening with fitted trays and gel. Home treatment generally
+          produces a gradual change over several weeks.
+        </p>
+        <p>
+          Explain the shade you would feel comfortable with. The amount of
+          lightening varies, and an exact match to an advertised photograph
+          cannot be guaranteed.
+        </p>
+        <h3>What should you know before deciding?</h3>
+        <p>
+          Temporary tooth sensitivity and gum irritation can occur. If cold
+          water already makes your teeth hurt, mention it before starting.
+          Follow the instructions for the amount of gel and how long to use it.
+          If sensitivity becomes uncomfortable, contact your dentist for
+          advice. If you are pregnant or breastfeeding, discuss postponing
+          elective whitening.
+        </p>
+        <p>
+          Whitening results change over time. Ask what the initial fee
+          includes, whether reviews are covered and what maintenance might
+          involve. If you are planning around a wedding or another event, allow
+          time for the assessment as well as treatment.
+        </p>
+        <p>
+          Bring the name of any product you have already tried. It helps Dr.
+          Makhija understand what you used, how your teeth responded and whether
+          cleaning or whitening is more likely to achieve the change you want.
+        </p>
+      </>
+    ),
+    cta: "Discuss teeth whitening with Dr. Makhija",
+  },
+  {
+    slug: "oral-surgery-and-wisdom-tooth-removal",
+    heading: "Oral Surgery and Wisdom Tooth Removal",
+    content: (
+      <>
+        <p>
+          A sore patch behind your last tooth settles, then flares up again a
+          few weeks later. Food gets trapped there, and it becomes uncomfortable
+          to chew. If this keeps happening, an examination can help you decide
+          whether the area needs treatment and whether removal is necessary.
+        </p>
+        <h3>When might oral surgery help?</h3>
+        <p>
+          Wisdom tooth removal is one common oral surgery procedure. A tooth
+          may need to be removed if it contributes to repeated infections,
+          decay or damage nearby. A healthy wisdom tooth that causes no
+          problems can often be monitored. Its position on an X-ray is one part
+          of the decision, alongside your symptoms and the examination
+          findings.
+        </p>
+        <h3>What happens at the appointment?</h3>
+        <p>
+          Tell your dentist how often the problem returns and whether you have
+          had swelling, fever or difficulty opening your mouth. Bring a list of
+          your medicines, particularly any that affect bleeding. Continue
+          prescribed medicines unless your treating clinician gives you
+          specific instructions.
+        </p>
+        <p>
+          Your dentist can explain whether care can take place in the practice
+          or whether a specialist referral is appropriate. If removal is
+          advised, ask why, what monitoring would involve, and which risks
+          apply to the position of your tooth. Depending on the case, these may
+          include bleeding, infection, dry socket or a change in sensation near
+          the lip, chin or tongue.
+        </p>
+        <h3>What should you know about comfort and recovery?</h3>
+        <p>
+          Local anaesthetic is commonly used. You may feel pressure or movement.
+          If you feel pain, let the clinician know. Discuss anxiety before the
+          procedure so you have time to understand the comfort options
+          available to you.
+        </p>
+        <p>
+          Soreness, swelling and jaw stiffness can affect eating and speaking
+          during recovery. Before arranging the date, ask how much time to allow
+          away from work, whether you will need an escort, and what the fee
+          covers. Take home clear instructions about food, cleaning and whom to
+          contact if you are worried. Bleeding that does not stop, worsening
+          pain or swelling, or fever needs prompt attention.
+        </p>
+        <p>
+          If the same tooth keeps interrupting meals or work, bring that
+          history to a consultation. It can help Dr. Makhija explain whether
+          monitoring, treatment or referral is the most appropriate next step.
+        </p>
+      </>
+    ),
+    cta: "Request an assessment for a troublesome wisdom tooth",
+    note: "Difficulty breathing or swallowing with facial or mouth swelling requires immediate emergency medical care.",
+  },
+  {
+    slug: "smile-designing",
+    heading: "Smile Designing for a Natural-Looking Result",
+    content: (
+      <>
+        <p>
+          “I’d like to repair this uneven edge, but I like the rest of my
+          smile.” That is a clear and useful starting point for a cosmetic
+          dental consultation. Knowing what you want to keep matters just as
+          much as knowing what you would like to change.
+        </p>
+        <h3>When might smile designing help?</h3>
+        <p>
+          Smile designing is the process of planning changes to the appearance
+          of your teeth while considering your bite and dental health. The plan
+          depends on your concern. A chipped edge may be suitable for bonding,
+          a colour concern may respond to whitening, and crowded teeth may
+          benefit from an orthodontic assessment using braces or <em>Invisalign</em>.
+          You may decide that one small change is enough.
+        </p>
+        <h3>What happens at the consultation?</h3>
+        <p>
+          Dr. Makhija can examine your teeth and gums, discuss what you notice
+          in everyday life, and explain which options are suitable. A
+          photograph of <em>your own smile</em> that you particularly like can
+          be helpful. It might show the tooth shape you remember before a chip
+          or a shade that feels natural to you.
+        </p>
+        <p>
+          If a preview or temporary mock-up is available for your case, ask
+          what it can show you about shape and proportion. The final result can
+          differ from the preview.
+        </p>
+        <h3>What should you know before deciding?</h3>
+        <p>
+          Ask which changes are permanent, how much healthy tooth would need to
+          be reshaped, and what future maintenance might involve. A small
+          bonded repair and a plan involving orthodontics have different
+          timelines, costs and effects on the teeth. An itemised plan should
+          explain the purpose of each proposed step and which parts are
+          optional.
+        </p>
+        <p>
+          If you have an event coming up, bring the date to your appointment.
+          It is reasonable to ask what can comfortably be completed in that
+          time and what can wait. You can take the plan home and consider it
+          before deciding.
+        </p>
+      </>
+    ),
+    cta: "Request a smile consultation with Dr. Makhija",
   },
 ];
 
@@ -589,20 +922,15 @@ export function TreatmentsSection() {
         </Reveal>
 
         <div className="treatment-reference-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {services.map(({ name, description, image }, index) => (
+          {services.map(({ name, description, image, slug }, index) => (
             <Reveal
               key={name}
               delay={(index % 3) * 50}
-              className={
-                name === "Oral Surgery"
-                  ? "lg:col-start-2"
-                  : ""
-              }
             >
               <Link
-                href="/book"
+                href={`/treatments/${slug}`}
                 className="treatment-reference-card"
-                aria-label={`Discuss ${name} at an appointment`}
+                aria-label={`Read about ${name}`}
               >
                 <img src={image} alt="" loading="lazy" />
                 <div>
@@ -615,6 +943,93 @@ export function TreatmentsSection() {
         </div>
       </div>
     </section>
+  );
+}
+
+export function TreatmentDetailPage({ slug }: { slug: string }) {
+  const treatment = treatmentDetails.find((item) => item.slug === slug);
+  const service = services.find((item) => item.slug === slug);
+  if (!treatment || !service) {
+    return (
+      <main>
+        <section className="treatments-reference-section">
+          <div className="treatments-reference-inner">
+            <article className="treatment-detail">
+              <h1>Treatment not found</h1>
+              <Link className="treatment-back-link mt-5" href="/treatments">
+                View all treatments
+              </Link>
+            </article>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  const { heading, content, cta, note } = treatment;
+  return (
+    <main>
+      <section className="treatments-reference-section treatment-detail-section">
+        <div className="treatments-reference-inner">
+          <Link className="treatment-back-link" href="/treatments">
+            All treatments
+          </Link>
+          <article className="treatment-detail">
+            <header className="treatment-detail-hero">
+              <div className="treatment-detail-intro">
+                <p className="eyebrow">PERSONALISED DENTAL CARE</p>
+                <h1>{heading}</h1>
+                <p className="treatment-detail-summary">{service.description}</p>
+                <ul className="treatment-care-points">
+                  <li><Check size={16} aria-hidden="true" /> A plan shaped around your needs</li>
+                  <li><Check size={16} aria-hidden="true" /> Clear options before you decide</li>
+                  <li><Check size={16} aria-hidden="true" /> Time to ask questions</li>
+                </ul>
+              </div>
+              <div className="treatment-detail-visual">
+                <img
+                  src={`${import.meta.env.BASE_URL}${service.image.replace(/^\//, "")}`}
+                  alt={`${service.name} illustration`}
+                />
+                <div className="treatment-visual-caption">
+                  <HeartHandshake size={20} aria-hidden="true" />
+                  <span>Thoughtful care, explained clearly.</span>
+                </div>
+              </div>
+            </header>
+
+            <div className="treatment-detail-layout">
+              <div className="treatment-detail-copy">{content}</div>
+              <aside className="treatment-consultation-card">
+                <span className="treatment-consultation-icon"><Stethoscope size={21} aria-hidden="true" /></span>
+                <p className="eyebrow">YOUR CONSULTATION</p>
+                <h2 className="serif">Start with a conversation.</h2>
+                <p>Every smile is different. An assessment helps Dr. Makhija understand your concern and talk through suitable next steps.</p>
+                <ul>
+                  <li><Check size={15} aria-hidden="true" /> Discuss what matters to you</li>
+                  <li><Check size={15} aria-hidden="true" /> Understand the available options</li>
+                  <li><Check size={15} aria-hidden="true" /> Ask about timing and costs</li>
+                </ul>
+                <Link href="/book" className="btn-outline">
+                  Book a consultation <ArrowRight size={16} aria-hidden="true" />
+                </Link>
+              </aside>
+            </div>
+
+            {note && <p className="treatment-detail-note"><ShieldCheck size={19} aria-hidden="true" /><span>{note}</span></p>}
+            <div className="treatment-detail-cta-panel">
+              <div>
+                <p className="eyebrow">A GOOD NEXT STEP</p>
+                <h2 className="serif">Let’s talk about what’s right for you.</h2>
+              </div>
+              <Link href="/book" className="btn-primary treatment-detail-cta">
+                {cta} <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
   );
 }
 
