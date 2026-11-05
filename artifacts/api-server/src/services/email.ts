@@ -67,6 +67,26 @@ async function notificationMessage(
         html: `<p>Appointment <strong>${escapeHtml(appointment.reference)}</strong> is now scheduled for ${escapeHtml(date)} at ${escapeHtml(time)}.</p>`,
       };
     }
+    if (notification.event === "appointment.doctor_new") {
+      const fields = [
+        ["Patient name", appointment.patientName],
+        ["Phone", appointment.phone],
+        ["Email", appointment.email || "Not provided"],
+        ["Clinic", locationName],
+        ["Appointment date", date],
+        ["Appointment time", time],
+        ["Appointment type / chief complaint", appointment.appointmentType],
+        ["Notes", appointment.notes || "None provided"],
+        ["Appointment ID", String(appointment._id)],
+        ["Reference", appointment.reference],
+        ["Status", appointment.status],
+      ];
+      return {
+        subject: `New appointment · ${appointment.reference}`,
+        text: `A new appointment booking was received.\n\n${fields.map(([label, value]) => `${label}: ${value}`).join("\n")}`,
+        html: `<p>A new appointment booking was received.</p><table>${fields.map(([label, value]) => `<tr><th align="left" style="padding:4px 12px 4px 0">${escapeHtml(label)}</th><td style="padding:4px 0">${escapeHtml(value)}</td></tr>`).join("")}</table>`,
+      };
+    }
     return {
       subject: `New appointment · ${appointment.reference}`,
       text: `A new appointment booking was recorded. Reference ${appointment.reference}. Review the protected admin dashboard for details.`,
@@ -260,6 +280,14 @@ export async function notifyAppointment(
     _id: unknown;
     reference: string;
     email: string | null;
+    patientName: string;
+    phone: string;
+    locationName: string;
+    localDate: string;
+    slotId: string;
+    appointmentType: string;
+    notes: string;
+    status: string;
   },
   change?: "cancelled" | "rescheduled",
 ): Promise<NotificationStatus> {

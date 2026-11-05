@@ -141,11 +141,7 @@ export async function createOnlineAppointment(input: BookingInput): Promise<{
   }
   let emailStatus: NotificationStatus = "failed";
   try {
-    emailStatus = await notifyAppointment({
-      _id: result.appointment._id,
-      reference: result.appointment.reference,
-      email: result.appointment.email,
-    });
+    emailStatus = await notifyAppointment(result.appointment);
   } catch {
     // Notification delivery is logged separately; a committed booking remains
     // valid even if the email provider is unavailable.
@@ -324,14 +320,7 @@ async function safelyNotify(
   change: "cancelled" | "rescheduled",
 ): Promise<void> {
   try {
-    await notifyAppointment(
-      {
-        _id: appointment._id,
-        reference: appointment.reference,
-        email: appointment.email,
-      },
-      change,
-    );
+    await notifyAppointment(appointment, change);
   } catch {
     // Database updates are authoritative; notification status remains visible
     // to administrators when the notification record could be written.
