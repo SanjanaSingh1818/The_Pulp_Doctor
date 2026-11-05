@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import mongoose from "mongoose";
 import { isDuplicateKeyError } from "../lib/mongo";
-import { formatAppointmentReference } from "../lib/appointmentReference";
+import { formatShortReference } from "../lib/shortReference";
 import {
   AppointmentModel,
   AppointmentSequenceModel,
@@ -56,7 +56,7 @@ async function nextAppointmentReference(): Promise<string> {
   if (!sequence) {
     throw new Error("Appointment ID could not be generated.");
   }
-  return formatAppointmentReference(sequence.sequence);
+  return formatShortReference(sequence.sequence);
 }
 
 function hashManagementToken(token: string): string {

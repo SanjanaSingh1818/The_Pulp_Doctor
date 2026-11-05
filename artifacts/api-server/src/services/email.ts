@@ -7,6 +7,8 @@ import { ReferralModel } from "../models/referral";
 import { logger } from "../lib/logger";
 
 export type NotificationStatus = "accepted" | "delivered" | "failed" | "not_configured";
+const fromAddress = () =>
+  process.env.RESEND_FROM_EMAIL || process.env.EMAIL_FROM;
 
 interface NotificationRequest {
   entityType: "appointment" | "referral" | "contact";
@@ -141,7 +143,7 @@ async function deliver(
   }
 
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL;
+  const from = fromAddress();
   if (!apiKey || !from) {
     await EmailNotificationModel.updateOne(
       { _id: id },
@@ -258,7 +260,7 @@ export async function retryNotification(
   if (record.status === "accepted" || record.status === "delivered") {
     return record.status;
   }
-  if (record.status === "not_configured" && (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL)) {
+  if (record.status === "not_configured" && (!process.env.RESEND_API_KEY || !fromAddress())) {
     return "not_configured";
   }
   return deliver(

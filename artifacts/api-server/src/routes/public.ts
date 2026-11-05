@@ -4,6 +4,7 @@ import {
   randomUUID,
   timingSafeEqual,
 } from "node:crypto";
+import { nextShortReference } from "../lib/shortReference";
 import { Router, type IRouter, type NextFunction, type Request, type Response } from "express";
 import multer, { MulterError } from "multer";
 import rateLimit from "express-rate-limit";
@@ -98,7 +99,7 @@ router.post("/contact", async (req, res): Promise<void> => {
   try {
     await connectMongo();
     const message = await ContactMessageModel.create({
-      reference: `MSG-${randomUUID().slice(0, 8).toUpperCase()}`,
+      reference: await nextShortReference("contact-message", "M"),
       name: parsed.data.name.trim(),
       email: parsed.data.email.trim().toLowerCase(),
       phone: parsed.data.phone?.trim() || null,
