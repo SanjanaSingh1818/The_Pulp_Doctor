@@ -1069,7 +1069,7 @@ components:
         id: { type: string }
         entityType: { type: string, enum: [appointment, referral, contact] }
         event: { type: string }
-        recipient: { type: string, format: email }
+        recipient: { type: string }
         entityReference: { type: string }
         status:
           $ref: "#/components/schemas/NotificationStatus"
