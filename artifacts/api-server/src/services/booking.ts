@@ -1,7 +1,12 @@
 import { createHash, randomBytes } from "node:crypto";
 import mongoose from "mongoose";
 import { isDuplicateKeyError } from "../lib/mongo";
-import { AppointmentModel, type AppointmentDocument } from "../models/appointment";
+import { formatAppointmentReference } from "../lib/appointmentReference";
+import {
+  AppointmentModel,
+  AppointmentSequenceModel,
+  type AppointmentDocument,
+} from "../models/appointment";
 import { ClinicLocationModel } from "../models/clinic";
 import {
   assertSlotIsPublished,
@@ -21,8 +26,37 @@ export interface BookingInput {
   internalNotes?: string;
 }
 
-function reference(prefix: "TPD" | "REF"): string {
-  return `${prefix}-${randomBytes(4).toString("hex").toUpperCase()}`;
+function isObjectId(value: string): boolean {
+  return mongoose.isValidObjectId(value);
+}
+
+function appointmentSelector(identifier: string) {
+  return isObjectId(identifier) ? { _id: identifier } : { reference: identifier };
+}
+
+async function nextAppointmentReference(): Promise<string> {
+  const selector = {
+    _id: new mongoose.Types.ObjectId("000000000000000000000001"),
+  };
+  const increment = (upsert: boolean) =>
+    AppointmentSequenceModel.findOneAndUpdate(
+      selector,
+      { $inc: { sequence: 1 } },
+      { ...(upsert ? { upsert: true } : {}), new: true },
+    );
+  let sequence: Awaited<ReturnType<typeof increment>>;
+  try {
+    sequence = await increment(true);
+  } catch (error) {
+    if (!isDuplicateKeyError(error)) {
+      throw error;
+    }
+    sequence = await increment(false);
+  }
+  if (!sequence) {
+    throw new Error("Appointment ID could not be generated.");
+  }
+  return formatAppointmentReference(sequence.sequence);
 }
 
 function hashManagementToken(token: string): string {
@@ -56,9 +90,10 @@ async function createReservation(
   input: BookingInput,
   source: "online" | "phone",
 ): Promise<{ appointment: AppointmentDocument; managementToken?: string }> {
+  const appointmentReference = await nextAppointmentReference();
   const session = await mongoose.startSession();
   const managementToken =
-    source === "online" ? randomBytes(32).toString("base64url") : undefined;
+    source === "online" ? randomBytes(16).toString("base64url") : undefined;
   let created: AppointmentDocument | undefined;
 
   try {
@@ -94,7 +129,7 @@ async function createReservation(
       const [appointment] = await AppointmentModel.create(
         [
           {
-            reference: reference("TPD"),
+            reference: appointmentReference,
             locationId: input.locationId,
             locationName: published.locationName,
             localDate: input.date,
@@ -177,9 +212,9 @@ async function updateReservation(
   let updated: AppointmentDocument | null = null;
   try {
     await session.withTransaction(async () => {
-      const current = await AppointmentModel.findById(appointmentId).session(
-        session,
-      );
+      const current = await AppointmentModel.findOne(
+        appointmentSelector(appointmentId),
+      ).session(session);
       if (!current || !["pending", "confirmed"].includes(current.status)) {
         throw new Error("Appointment was not found or is no longer active.");
       }
@@ -259,9 +294,9 @@ export async function cancelByPatient(input: {
   appointmentId: string;
   managementToken: string;
 }): Promise<AppointmentDocument> {
-  const current = await AppointmentModel.findById(input.appointmentId).select(
-    "+managementTokenHash",
-  );
+  const current = await AppointmentModel.findOne(
+    appointmentSelector(input.appointmentId),
+  ).select("+managementTokenHash");
   if (!current || !managementTokenMatches(input.managementToken, current.managementTokenHash)) {
     throw new Error("Appointment management token is invalid.");
   }
@@ -277,9 +312,9 @@ export async function rescheduleByPatient(input: {
   date: string;
   slotId: string;
 }): Promise<AppointmentDocument> {
-  const current = await AppointmentModel.findById(input.appointmentId).select(
-    "+managementTokenHash",
-  );
+  const current = await AppointmentModel.findOne(
+    appointmentSelector(input.appointmentId),
+  ).select("+managementTokenHash");
   if (!current || !managementTokenMatches(input.managementToken, current.managementTokenHash)) {
     throw new Error("Appointment management token is invalid.");
   }

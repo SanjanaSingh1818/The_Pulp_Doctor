@@ -12,6 +12,8 @@ test("includes the active local frontend origins in development", () => {
     }),
     [
       "https://thepulpdoctor.com",
+      "https://the-pulp-doctor.vercel.app",
+      "https://www.thepulpdoctor.com",
       "http://localhost:5175",
       "http://127.0.0.1:5175",
     ],
@@ -25,6 +27,10 @@ test("does not add development origins outside development", () => {
       developmentOrigins: "http://localhost:5175",
       nodeEnv: "production",
     }),
-    ["https://thepulpdoctor.com"],
+    [
+      "https://thepulpdoctor.com",
+      "https://the-pulp-doctor.vercel.app",
+      "https://www.thepulpdoctor.com",
+    ],
   );
 });

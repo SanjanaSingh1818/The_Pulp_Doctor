@@ -77,8 +77,7 @@ async function notificationMessage(
         ["Appointment time", time],
         ["Appointment type / chief complaint", appointment.appointmentType],
         ["Notes", appointment.notes || "None provided"],
-        ["Appointment ID", String(appointment._id)],
-        ["Reference", appointment.reference],
+        ["Appointment ID", appointment.reference],
         ["Status", appointment.status],
       ];
       return {

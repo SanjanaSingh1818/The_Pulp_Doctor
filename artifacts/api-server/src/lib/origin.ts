@@ -4,7 +4,11 @@ interface OriginConfig {
   nodeEnv?: string;
 }
 
-const productionOrigin = "https://the-pulp-doctor.vercel.app";
+const productionOrigins = [
+  "https://the-pulp-doctor.vercel.app",
+  "https://thepulpdoctor.com",
+  "https://www.thepulpdoctor.com",
+];
 
 function normalizeOrigin(origin: string): string {
   return origin.trim().replace(/\/+$/, "");
@@ -22,9 +26,8 @@ export function getAllowedOrigins(
     .map(normalizeOrigin)
     .filter(Boolean);
 
-  // Keep the production frontend allowed even if the Render environment value
-  // is missing or includes a trailing slash.
-  origins.push(productionOrigin);
+  // Keep production frontends allowed even if APP_ORIGIN is missing.
+  origins.push(...productionOrigins);
 
   if (config.nodeEnv === "development") {
     origins.push(

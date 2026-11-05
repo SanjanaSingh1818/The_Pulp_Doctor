@@ -28,6 +28,10 @@ export interface AppointmentDocument extends Document {
   reservationBuckets?: string[];
 }
 
+interface AppointmentSequenceDocument extends Document {
+  sequence: number;
+}
+
 const appointmentSchema = new Schema<AppointmentDocument>(
   {
     reference: { type: String, required: true, unique: true, index: true },
@@ -58,6 +62,11 @@ const appointmentSchema = new Schema<AppointmentDocument>(
   { timestamps: true, strict: "throw" },
 );
 
+const appointmentSequenceSchema = new Schema<AppointmentSequenceDocument>(
+  { sequence: { type: Number, required: true, default: 0 } },
+  { timestamps: false, strict: "throw" },
+);
+
 // A single doctor serves all locations: a date/time can be reserved only once.
 // Cancelled or rescheduled records release the key without deleting history.
 appointmentSchema.index(
@@ -73,3 +82,10 @@ appointmentSchema.index({ localDate: 1, locationId: 1, status: 1 });
 export const AppointmentModel =
   (mongoose.models.Appointment as mongoose.Model<AppointmentDocument>) ||
   mongoose.model<AppointmentDocument>("Appointment", appointmentSchema);
+
+export const AppointmentSequenceModel =
+  (mongoose.models.AppointmentSequence as mongoose.Model<AppointmentSequenceDocument>) ||
+  mongoose.model<AppointmentSequenceDocument>(
+    "AppointmentSequence",
+    appointmentSequenceSchema,
+  );
