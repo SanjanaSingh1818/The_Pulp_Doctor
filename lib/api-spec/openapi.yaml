@@ -42,6 +42,22 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ClinicLocation"
+  /engagement-events:
+    post:
+      operationId: recordEngagementEvent
+      tags: [public]
+      summary: Record a call or WhatsApp click
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EngagementEventInput"
+      responses:
+        "204":
+          description: Engagement click recorded
+        "400":
+          description: Invalid engagement event
   /contact:
     post:
       operationId: createContactMessage
@@ -1053,7 +1069,7 @@ components:
         role: { type: string, const: admin }
     AdminDashboard:
       type: object
-      required: [todayAppointments, upcomingAppointments, pendingReferrals, nextAppointments]
+      required: [todayAppointments, upcomingAppointments, pendingReferrals, nextAppointments, clickAnalytics]
       properties:
         todayAppointments: { type: integer }
         upcomingAppointments: { type: integer }
@@ -1062,6 +1078,32 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/AdminAppointment"
+        clickAnalytics:
+          $ref: "#/components/schemas/EngagementAnalytics"
+    EngagementEventInput:
+      type: object
+      required: [eventType, page]
+      properties:
+        eventType: { type: string, enum: [call, whatsapp] }
+        page: { type: string, minLength: 1, maxLength: 240 }
+    EngagementAnalytics:
+      type: object
+      required: [callTotal, whatsappTotal, topPages]
+      properties:
+        callTotal: { type: integer }
+        whatsappTotal: { type: integer }
+        topPages:
+          type: array
+          items:
+            $ref: "#/components/schemas/EngagementPageStats"
+    EngagementPageStats:
+      type: object
+      required: [page, callClicks, whatsappClicks, totalClicks]
+      properties:
+        page: { type: string }
+        callClicks: { type: integer }
+        whatsappClicks: { type: integer }
+        totalClicks: { type: integer }
     AdminNotification:
       type: object
       required: [id, entityType, event, recipient, entityReference, status, attempts, updatedAt]

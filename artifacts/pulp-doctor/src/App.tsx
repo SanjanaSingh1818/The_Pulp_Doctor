@@ -24,13 +24,18 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import {
   ArrowLeft, ArrowRight, Check, ChevronDown, Clock3, HeartHandshake, MapPin, ShieldCheck, LogOut, Plus, RefreshCw,
-  Printer, AlertCircle, ClipboardList, MoveUpRight,
+  Printer, AlertCircle, ClipboardList, MoveUpRight, CalendarDays,
 } from 'lucide-react';
 import NotFound from '@/pages/not-found';
-import { AboutSection, Brand, DentistReferralSection, EnquiryLink, HeroSection, PatientJourneySection, PatientStoriesSection, PatientStoryContent, PublicUtilityControls, Reveal, RootCanalSection, SiteFooter, SiteHeader, SymptomsSection, TreatmentDetailPage, TreatmentsSection, patientStories } from '@/components/landing-sections';
+import { AboutSection, Brand, DentistReferralSection, EnquiryLink, HeroSection, PatientJourneySection, PatientStoriesSection, PatientStoryContent, PublicUtilityControls, Reveal, RootCanalSection, SiteFooter, SiteHeader, SymptomsSection, TreatmentDetailPage, TreatmentsSection, patientStories, trackEngagementClick } from '@/components/landing-sections';
 
 const queryClient = new QueryClient();
 const locationDisplayOrder = ['gurugram-jcm', 'model-town-delhi', 'karol-bagh-delhi'];
+const clinicCardImages: Record<string, { file: string; position: string }> = {
+  'gurugram-jcm': { file: 'pearl-clinic.png', position: 'center 55%' },
+  'model-town-delhi': { file: 'pearl-modeltown.jpg', position: 'center' },
+  'karol-bagh-delhi': { file: 'Khandewal-clinic.png', position: 'center 20%' },
+};
 const inDoctorPreferredOrder = <T extends { id: string }>(locations: T[] = []) =>
   [...locations].sort((a, b) => {
     const aIndex = locationDisplayOrder.indexOf(a.id);
@@ -77,6 +82,12 @@ function clinicLocalDateTime(now: Date) {
   };
 }
 const today = (now = new Date()) => clinicLocalDateTime(now).date;
+const formatClinicTime = (time: string) => {
+  const match = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(time);
+  if (!match) return time;
+  const hours = Number(match[1]);
+  return `${hours % 12 || 12}:${match[2]} ${hours < 12 ? 'AM' : 'PM'}`;
+};
 const isClinicSlotPast = (date: string, time: string, now: Date) => {
   const localNow = clinicLocalDateTime(now);
   return date < localNow.date || (date === localNow.date && time < localNow.time);
@@ -165,13 +176,37 @@ function LocationCards({locations,loading,error,retry}:{locations:ClinicLocation
   if (loading) return <div className="grid gap-4 md:grid-cols-3">{[0,1,2].map(i=><div key={i} className="h-48 animate-pulse rounded-2xl bg-[#e6eff0]"/> )}</div>;
   if (error) return <div className="rounded-2xl border border-[#d1e0e1] bg-white p-6 text-sm"><p>Clinic details are temporarily unavailable.</p><button className="mt-3 font-bold text-[#176d70]" onClick={retry}>Try again</button></div>;
   if (!locations.length) return <p className="rounded-xl bg-white p-5 text-sm text-[#55707a]">Clinic locations will appear when the practice schedule is available.</p>;
-  return <div className="grid gap-4 md:grid-cols-3">{locations.map(location=><article key={location.id} className="soft-card rounded-2xl p-6">
-    <div className="flex items-start justify-between"><span className="grid h-10 w-10 place-items-center rounded-xl bg-[#e7f2f1] text-[#267c79]"><MapPin size={19}/></span><a className="text-xs font-bold text-[#277a78] underline underline-offset-4" href={location.mapsUrl} target="_blank" rel="noreferrer">Directions</a></div>
-    <h3 className="mt-5 text-xl font-bold text-[#183e50]">{location.name}</h3><p className="mt-1 text-sm font-medium text-[#53717a]">{location.clinicName}</p>
-    <p className="mt-4 text-sm leading-6 text-[#617680]">{location.address}</p>
-    <div className="mt-5 border-t border-[#e4eded] pt-4"><p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#417c7c]"><Clock3 size={14}/> Weekly hours</p>
-      {location.weeklyHours.length ? location.weeklyHours.map(item=><p key={item.day} className="mt-2 flex justify-between text-sm text-[#48616d]"><span>{['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][item.day]}</span><span>{item.opensAt}–{item.closesAt}</span></p>) : <p className="mt-2 text-sm text-[#687e85]">Hours are not currently published.</p>}
-    </div></article>)}</div>;
+  return <div className="location-card-grid">{locations.map((location,index)=>{
+    const clinicImage = clinicCardImages[location.id];
+    return <article key={location.id} className={`location-card location-card-${index%3}`}>
+    <div className="location-card-cover" aria-hidden="true">
+      {clinicImage ? <img
+        className="location-card-image"
+        src={`${import.meta.env.BASE_URL}${clinicImage.file}`}
+        alt=""
+        loading="lazy"
+        style={{ objectPosition: clinicImage.position }}
+      /> : <>
+        <div className="location-scene-window"><span/><span/><span/></div>
+        <div className="location-scene-desk"/>
+        <div className="location-scene-plant"><i/><i/><i/></div>
+      </>}
+      <span className="location-tag"><MapPin size={15}/>{location.name}</span>
+    </div>
+    <div className="location-card-body">
+      <h3>{location.name}</h3><p className="location-clinic-name">{location.clinicName}</p>
+      <p className="location-address"><MapPin size={17} aria-hidden="true"/>{location.address}</p>
+      <div className="location-hours">
+        <p className="location-hours-heading"><CalendarDays size={16} aria-hidden="true"/> Weekly hours</p>
+        {location.weeklyHours.length ? location.weeklyHours.map(item=><p key={item.day} className="location-hour-row"><span>{['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][item.day]}</span><span>{formatClinicTime(item.opensAt)}–{formatClinicTime(item.closesAt)}</span></p>) : <p className="location-hours-unpublished">Hours are not currently published.</p>}
+      </div>
+      <div className="location-card-actions">
+        <Link className="btn-primary" href="/book">Book appointment <ArrowRight size={15}/></Link>
+        <a className="btn-outline" href={location.mapsUrl} target="_blank" rel="noreferrer"><MapPin size={16} aria-hidden="true"/> Directions</a>
+      </div>
+    </div>
+  </article>;
+  })}</div>;
 }
 function Booking({locations}:{locations:ClinicLocation[]}) {
   const clinicNow=useClinicNow();
@@ -219,11 +254,37 @@ function Booking({locations}:{locations:ClinicLocation[]}) {
 }
 
 function ClinicsSection({ locations, loading, error, retry }: { locations: ClinicLocation[]; loading: boolean; error: boolean; retry: () => void }) {
-  return <section id="locations" className="clinics-premium section-pad"><div className="mx-auto max-w-[1160px]"><div className="section-heading-row"><div><p className="eyebrow">WHERE TO FIND US</p><h2 className="serif">Care, close to home.</h2></div><p>Clinic days and hours are published by the practice and may vary. Check availability before travelling.</p></div><LocationCards locations={locations} loading={loading} error={error} retry={retry}/></div></section>;
+  return (
+    <section id="locations" className="clinics-premium section-pad">
+      <img
+        className="clinics-india-gate"
+        src={`${import.meta.env.BASE_URL}india-gate.png`}
+        alt=""
+        aria-hidden="true"
+      />
+      <div className="clinics-premium-content mx-auto max-w-[1200px]">
+        <div className="locations-heading">
+          <div>
+            <p className="eyebrow"><MapPin size={17} aria-hidden="true" /> Where to find us <span /></p>
+            <h2 className="serif">Care, close to <em>home.</em></h2>
+            <p className="locations-intro">
+              Visit us at our conveniently located clinics in Delhi NCR.<br />
+              Choose a location and book an appointment at your convenience.
+            </p>
+          </div>
+          {/* <aside className="locations-note">
+            <CalendarDays size={20} aria-hidden="true" />
+            <span>Clinic timings may vary by location. Please confirm before visiting.</span>
+          </aside> */}
+        </div>
+        <LocationCards locations={locations} loading={loading} error={error} retry={retry} />
+      </div>
+    </section>
+  );
 }
 
 function ContactSection() {
-  return <section id="contact" className="contact-premium section-pad"><div className="contact-inner"><div><Reveal><p className="eyebrow">GET IN TOUCH</p><h2 className="serif">Start with<br/><em>a conversation.</em></h2><p className="contact-intro">Have a question about your care? Reach the practice directly or send a general enquiry. For a confirmed appointment request, choose a clinic and available time on our booking page.</p><div className="mt-6 grid gap-3"><a className="contact-email" href="tel:+918448500405"><span><strong>Call the practice</strong><small>+91 8448 500405</small></span><MoveUpRight size={16}/></a><a className="contact-email" href="mailto:care@thepulpdoctor.com"><span><strong>Email</strong><small>care@thepulpdoctor.com</small></span><MoveUpRight size={16}/></a><Link className="contact-email" href="/locations"><span><strong>Clinic locations</strong><small>View addresses and directions</small></span><MapPin size={16}/></Link></div><Link className="btn-primary mt-6" href="/book">Book an appointment <ArrowRight size={16}/></Link></Reveal></div><Reveal delay={100}><ContactForm/></Reveal></div></section>;
+  return <section id="contact" className="contact-premium section-pad"><div className="contact-inner"><div><Reveal><p className="eyebrow">GET IN TOUCH</p><h2 className="serif">Start with<br/><em>a conversation.</em></h2><p className="contact-intro">Have a question about your care? Reach the practice directly or send a general enquiry. For a confirmed appointment request, choose a clinic and available time on our booking page.</p><div className="mt-6 grid gap-3"><a className="contact-email" href="tel:+918448500405" onClick={()=>trackEngagementClick('call')}><span><strong>Call the practice</strong><small>+91 8448 500405</small></span><MoveUpRight size={16}/></a><a className="contact-email" href="mailto:care@thepulpdoctor.com"><span><strong>Email</strong><small>care@thepulpdoctor.com</small></span><MoveUpRight size={16}/></a><Link className="contact-email" href="/locations"><span><strong>Clinic locations</strong><small>View addresses and directions</small></span><MapPin size={16}/></Link></div><Link className="btn-primary mt-6" href="/book">Book an appointment <ArrowRight size={16}/></Link></Reveal></div><Reveal delay={100}><ContactForm/></Reveal></div></section>;
 }
 
 function PatientStoryPage({ slug }: { slug: string }) {
@@ -399,12 +460,26 @@ function AdminDashboard() {
   if(!session.data)return <AdminLogin/>;
   const refresh=()=>{void qc.invalidateQueries({queryKey:getGetAdminDashboardQueryKey()});void qc.invalidateQueries({queryKey:getListAdminAppointmentsQueryKey()});void qc.invalidateQueries({queryKey:getListAdminReferralsQueryKey()});void qc.invalidateQueries({queryKey:getListAdminSchedulesQueryKey()});};
   const adminError=(error:unknown)=>setMessage(errorText(error));
+  const clickAnalytics=dashboard.data?.clickAnalytics;
   return <main className="min-h-[100dvh] bg-[#eff5f5]">
     <header className="border-b border-[#d8e5e5] bg-white px-5 py-4"><div className="mx-auto flex max-w-[1350px] flex-wrap items-center justify-between gap-4"><Brand/><div className="flex items-center gap-4"><span className="hidden text-sm text-[#58717a] sm:block">Signed in as <b>{session.data.displayName}</b></span><button className="btn-outline !px-4 !py-2 text-sm" onClick={()=>logout.mutate(undefined,{onSuccess:()=>{void qc.invalidateQueries({queryKey:getGetAdminSessionQueryKey()});navigate('/admin/login')},onError:adminError})}><LogOut size={15}/> Sign out</button></div></div></header>
     <div className="mx-auto max-w-[1350px] px-4 py-8 sm:px-6"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="eyebrow">Practice administration</p><h1 className="serif mt-2 text-5xl text-[#173f51]">Good day, {session.data.displayName.split(' ')[0]}.</h1><p className="mt-2 text-sm text-[#637982]">Private practice operations · Handle patient information with care</p></div><button className="btn-outline !px-4 !py-2.5 text-sm" onClick={refresh}><RefreshCw size={15}/> Refresh data</button></div>
       <nav className="mt-8 flex gap-2 overflow-x-auto border-b border-[#d6e4e4]" aria-label="Administration sections">{(['overview','appointments','referrals','messages','schedule','notifications'] as const).map(item=><button key={item} className={`shrink-0 border-b-2 px-4 py-3 text-sm font-bold capitalize ${tab===item?'border-[#287c78] text-[#176d70]':'border-transparent text-[#698087]'}`} onClick={()=>setTab(item)}>{item}</button>)}</nav>
       {message&&<p role="alert" className="mt-4 flex items-center gap-2 rounded-xl bg-[#fcf1ee] p-3 text-sm text-[#934a3f]"><AlertCircle size={16}/>{message}<button className="ml-auto underline" onClick={()=>setMessage('')}>Dismiss</button></p>}
-      {tab==='overview'&&<><div className="mt-6 grid gap-4 sm:grid-cols-3">{[['Today',dashboard.data?.todayAppointments],['Upcoming',dashboard.data?.upcomingAppointments],['Referrals to review',dashboard.data?.pendingReferrals]].map(([title,value])=><div className="soft-card rounded-2xl p-5" key={title as string}><p className="text-xs font-bold uppercase tracking-widest text-[#658087]">{title}</p><p className="serif mt-3 text-4xl text-[#1a5261]">{dashboard.isLoading?'—':value??'—'}</p></div>)}</div>
+      {tab==='overview'&&<><div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">{[
+        ['Today',dashboard.data?.todayAppointments],
+        ['Upcoming',dashboard.data?.upcomingAppointments],
+        ['Referrals to review',dashboard.data?.pendingReferrals],
+        ['Call clicks',clickAnalytics?.callTotal],
+        ['WhatsApp clicks',clickAnalytics?.whatsappTotal],
+      ].map(([title,value])=><div className="soft-card rounded-2xl p-5" key={title as string}><p className="text-xs font-bold uppercase tracking-widest text-[#658087]">{title}</p><p className="serif mt-3 text-4xl text-[#1a5261]">{dashboard.isLoading?'—':value??'—'}</p></div>)}</div>
+        <section className="soft-card mt-6 rounded-2xl p-5 sm:p-7">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div><p className="eyebrow">Engagement analytics · all time</p><h2 className="mt-2 text-xl font-bold text-[#21485a]">Top pages generating calls and WhatsApp clicks</h2></div>
+            <p className="text-xs text-[#71858a]">Ranked by total contact clicks</p>
+          </div>
+          {dashboard.isError?<ErrorPanel retry={()=>void dashboard.refetch()}/>:clickAnalytics?.topPages.length?<div className="mt-5 overflow-x-auto"><table className="w-full min-w-[560px] text-left text-sm"><thead className="border-b border-[#e0eaea] text-xs uppercase tracking-wider text-[#70858a]"><tr><th className="pb-3 pr-4">Page</th><th className="pb-3 px-3 text-right">Call clicks</th><th className="pb-3 px-3 text-right">WhatsApp clicks</th><th className="pb-3 pl-3 text-right">Total</th></tr></thead><tbody className="divide-y divide-[#edf1ef]">{clickAnalytics.topPages.map(item=><tr key={item.page}><td className="py-3 pr-4 font-semibold text-[#315766]">{item.page}</td><td className="px-3 py-3 text-right text-[#526d75]">{item.callClicks}</td><td className="px-3 py-3 text-right text-[#526d75]">{item.whatsappClicks}</td><td className="py-3 pl-3 text-right font-bold text-[#176d70]">{item.totalClicks}</td></tr>)}</tbody></table></div>:<p className="mt-5 rounded-xl bg-[#f2f7f6] p-4 text-sm text-[#657b81]">{dashboard.isLoading?'Loading click activity…':'No call or WhatsApp clicks have been recorded yet.'}</p>}
+        </section>
         <section className="soft-card mt-6 rounded-2xl p-5 sm:p-7"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="eyebrow">Daily list</p><h2 className="mt-2 text-xl font-bold text-[#21485a]">Next appointments</h2></div><button className="btn-outline !py-2 text-sm" onClick={()=>setTab('appointments')}>View appointments <ArrowRight size={14}/></button></div><AppointmentTable items={dashboard.data?.nextAppointments??[]} empty={dashboard.isLoading?'Loading appointments…':'No upcoming appointments are available.'} onCancel={(id)=>{setAdminActionId(id);setTab('appointments')}}/></section></>}
       {tab==='appointments'&&<section className="mt-6 grid gap-5 xl:grid-cols-[1.35fr_.65fr]"><div className="soft-card rounded-2xl p-5 sm:p-7"><div className="flex flex-wrap items-end gap-3"><label className="text-sm font-semibold text-[#315364]">Date<input className="field mt-1" type="date" value={filterDate} onChange={e=>setFilterDate(e.target.value)}/></label><label className="text-sm font-semibold text-[#315364]">Location<select className="field mt-1" value={selectedLocation} onChange={e=>setSelectedLocation(e.target.value)}><option value="">All locations</option>{locations.map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select></label><button className="btn-outline !py-2 text-sm" onClick={()=>appointments.refetch()}>Refresh</button></div>
           {appointments.isError?<ErrorPanel retry={()=>appointments.refetch()}/>:<AppointmentTable items={appointments.data??[]} empty={appointments.isLoading?'Loading protected appointment records…':'No appointments match these filters.'} onComplete={id=>{if(confirm('Mark this past appointment complete?'))completeAppointment.mutate({appointmentId:id,data:{confirmed:true}},{onSuccess:refresh,onError:adminError})}} onCancel={id=>{const reason=prompt('Reason for cancellation (optional):')??'';if(confirm('Confirm cancellation of this appointment?'))cancel.mutate({appointmentId:id,data:{confirmed:true,reason}},{onSuccess:refresh,onError:adminError})}} onReschedule={item=>{setRescheduleTarget({id:item.id,locationId:item.locationId});setRescheduleDate(item.date);setRescheduleSlot('');setMessage('')}}/>}

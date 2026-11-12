@@ -44,6 +44,21 @@ export const ListLocationsResponse = zod.array(ListLocationsResponseItem)
 
 
 /**
+ * @summary Record a call or WhatsApp click
+ */
+export const recordEngagementEventBodyPageMax = 240;
+
+
+
+export const RecordEngagementEventBody = zod.object({
+  "eventType": zod.enum(['call', 'whatsapp']),
+  "page": zod.string().min(1).max(recordEngagementEventBodyPageMax)
+})
+
+export const RecordEngagementEventResponse = zod.void()
+
+
+/**
  * @summary Send a practice contact message
  */
 export const createContactMessageBodyNameMin = 2;
@@ -408,7 +423,17 @@ export const GetAdminDashboardResponse = zod.object({
   "appointmentType": zod.string(),
   "notes": zod.string().optional(),
   "internalNotes": zod.string()
+})),
+  "clickAnalytics": zod.object({
+  "callTotal": zod.number().int(),
+  "whatsappTotal": zod.number().int(),
+  "topPages": zod.array(zod.object({
+  "page": zod.string(),
+  "callClicks": zod.number().int(),
+  "whatsappClicks": zod.number().int(),
+  "totalClicks": zod.number().int()
 }))
+})
 })
 
 

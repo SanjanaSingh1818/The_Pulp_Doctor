@@ -43,6 +43,7 @@ import type {
   ContactMessage,
   ContactMessageConfirmation,
   ContactMessageInput,
+  EngagementEventInput,
   GetAvailabilityParams,
   HealthStatus,
   ListAdminAppointmentsParams,
@@ -242,6 +243,94 @@ export function useListLocations<TData = Awaited<ReturnType<typeof listLocations
 
 
 
+
+export const getRecordEngagementEventUrl = () => {
+
+
+
+
+  return `/api/engagement-events`
+}
+
+/**
+ * @summary Record a call or WhatsApp click
+ */
+export const recordEngagementEvent = async (engagementEventInput: EngagementEventInput, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<void>(getRecordEngagementEventUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(engagementEventInput)
+  }
+);}
+
+
+
+
+
+export const getRecordEngagementEventMutationKey = () => ['recordEngagementEvent'] as const;
+
+export const getRecordEngagementEventMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordEngagementEvent>>, TError,RecordEngagementEventMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof recordEngagementEvent>>, TError,RecordEngagementEventMutationVariables, TContext> => {
+
+const mutationKey = getRecordEngagementEventMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof recordEngagementEvent>>, RecordEngagementEventMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  recordEngagementEvent(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RecordEngagementEventMutationResult = NonNullable<Awaited<ReturnType<typeof recordEngagementEvent>>>
+    export type RecordEngagementEventMutationBody = BodyType<EngagementEventInput>
+    export type RecordEngagementEventMutationError = ErrorType<void>
+    export type RecordEngagementEventMutationVariables = {data: BodyType<EngagementEventInput>}
+
+    /**
+ * @summary Record a call or WhatsApp click
+ */
+export const useRecordEngagementEvent = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordEngagementEvent>>, TError,RecordEngagementEventMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof recordEngagementEvent>>,
+        TError,
+        RecordEngagementEventMutationVariables,
+        TContext
+      > => {
+      return useMutation(getRecordEngagementEventMutationOptions(options));
+    }
 
 export const getCreateContactMessageUrl = () => {
 

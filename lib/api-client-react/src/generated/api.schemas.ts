@@ -482,11 +482,42 @@ export interface AdminAppointment {
   internalNotes: string;
 }
 
+export interface EngagementPageStats {
+  page: string;
+  callClicks: number;
+  whatsappClicks: number;
+  totalClicks: number;
+}
+
+export interface EngagementAnalytics {
+  callTotal: number;
+  whatsappTotal: number;
+  topPages: EngagementPageStats[];
+}
+
 export interface AdminDashboard {
   todayAppointments: number;
   upcomingAppointments: number;
   pendingReferrals: number;
   nextAppointments: AdminAppointment[];
+  clickAnalytics: EngagementAnalytics;
+}
+
+export type EngagementEventInputEventType = typeof EngagementEventInputEventType[keyof typeof EngagementEventInputEventType];
+
+
+export const EngagementEventInputEventType = {
+  call: 'call',
+  whatsapp: 'whatsapp',
+} as const;
+
+export interface EngagementEventInput {
+  eventType: EngagementEventInputEventType;
+  /**
+     * @minLength 1
+     * @maxLength 240
+     */
+  page: string;
 }
 
 export type AdminNotificationEntityType = typeof AdminNotificationEntityType[keyof typeof AdminNotificationEntityType];

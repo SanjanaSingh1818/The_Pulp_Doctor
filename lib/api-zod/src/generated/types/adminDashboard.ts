@@ -6,10 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { AdminAppointment } from './adminAppointment';
+import type { EngagementAnalytics } from './engagementAnalytics';
 
 export interface AdminDashboard {
   todayAppointments: number;
   upcomingAppointments: number;
   pendingReferrals: number;
   nextAppointments: AdminAppointment[];
+  clickAnalytics: EngagementAnalytics;
 }

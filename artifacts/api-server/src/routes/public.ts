@@ -12,6 +12,7 @@ import mongoose from "mongoose";
 import {
   CreateContactMessageBody,
   CreateContactMessageResponse,
+  RecordEngagementEventBody,
   CancelAppointmentBody,
   CancelAppointmentParams,
   CancelAppointmentResponse,
@@ -37,6 +38,7 @@ import {
   type ReferralAttachmentMetadata,
 } from "../models/referral";
 import { ContactMessageModel } from "../models/contactMessage";
+import { EngagementEventModel } from "../models/engagementEvent";
 import { EmailNotificationModel } from "../models/notification";
 import { createOnlineAppointment, cancelByPatient, isBookingConflict, rescheduleByPatient, toAppointmentSummary } from "../services/booking";
 import { getAvailability, listLocations } from "../services/clinic";
@@ -55,6 +57,12 @@ const router: IRouter = Router();
 const uploadRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+const engagementRateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 30,
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -89,6 +97,34 @@ const coronalRestorationKinds = [
   "Other",
   "To be decided after clinical assessment",
 ];
+
+router.post(
+  "/engagement-events",
+  engagementRateLimiter,
+  async (req, res): Promise<void> => {
+    const parsed = RecordEngagementEventBody.safeParse(req.body);
+    if (
+      !parsed.success ||
+      !parsed.data.page.startsWith("/") ||
+      parsed.data.page.startsWith("//") ||
+      parsed.data.page.includes("?") ||
+      parsed.data.page.includes("#")
+    ) {
+      res.status(400).json({ error: "Enter a valid engagement event." });
+      return;
+    }
+    try {
+      await connectMongo();
+      await EngagementEventModel.create({
+        eventType: parsed.data.eventType,
+        page: parsed.data.page,
+      });
+      res.sendStatus(204);
+    } catch (error) {
+      sendApiError(req, res, error);
+    }
+  },
+);
 
 router.post("/contact", async (req, res): Promise<void> => {
   const parsed = CreateContactMessageBody.safeParse(req.body);

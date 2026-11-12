@@ -54,6 +54,7 @@ import { AdminUserModel } from "../models/admin";
 import { AppointmentModel } from "../models/appointment";
 import { AvailabilityOverrideModel } from "../models/availability";
 import { ContactMessageModel } from "../models/contactMessage";
+import { EngagementEventModel } from "../models/engagementEvent";
 import {
   ClinicLocationModel,
   DoctorScheduleModel,
@@ -250,32 +251,81 @@ router.get("/dashboard", async (req, res): Promise<void> => {
   try {
     await connectMongo();
     const today = localDateInKolkata();
-    const [todayAppointments, upcomingAppointments, pendingReferrals, next] =
-      await Promise.all([
-        AppointmentModel.countDocuments({
-          localDate: today,
-          status: { $in: ["pending", "confirmed"] },
-        }),
-        AppointmentModel.countDocuments({
-          localDate: { $gt: today },
-          status: { $in: ["pending", "confirmed"] },
-        }),
-        ReferralModel.countDocuments({
-          status: { $in: ["received", "reviewing"] },
-        }),
-        AppointmentModel.find({
-          localDate: { $gte: today },
-          status: { $in: ["pending", "confirmed"] },
-        })
-          .sort({ startsAt: 1 })
-          .limit(6),
-      ]);
+    const [
+      todayAppointments,
+      upcomingAppointments,
+      pendingReferrals,
+      next,
+      clickTotals,
+      topClickPages,
+    ] = await Promise.all([
+      AppointmentModel.countDocuments({
+        localDate: today,
+        status: { $in: ["pending", "confirmed"] },
+      }),
+      AppointmentModel.countDocuments({
+        localDate: { $gt: today },
+        status: { $in: ["pending", "confirmed"] },
+      }),
+      ReferralModel.countDocuments({
+        status: { $in: ["received", "reviewing"] },
+      }),
+      AppointmentModel.find({
+        localDate: { $gte: today },
+        status: { $in: ["pending", "confirmed"] },
+      })
+        .sort({ startsAt: 1 })
+        .limit(6),
+      EngagementEventModel.aggregate([
+        { $group: { _id: "$eventType", total: { $sum: 1 } } },
+      ]),
+      EngagementEventModel.aggregate([
+        {
+          $group: {
+            _id: "$page",
+            callClicks: {
+              $sum: { $cond: [{ $eq: ["$eventType", "call"] }, 1, 0] },
+            },
+            whatsappClicks: {
+              $sum: { $cond: [{ $eq: ["$eventType", "whatsapp"] }, 1, 0] },
+            },
+          },
+        },
+        {
+          $addFields: {
+            totalClicks: { $add: ["$callClicks", "$whatsappClicks"] },
+          },
+        },
+        { $sort: { totalClicks: -1, _id: 1 } },
+        { $limit: 5 },
+      ]),
+    ]);
+    const clickTotalFor = (eventType: "call" | "whatsapp") =>
+      clickTotals.find((item: { _id: string }) => item._id === eventType)
+        ?.total ?? 0;
     res.json(
       GetAdminDashboardResponse.parse({
         todayAppointments,
         upcomingAppointments,
         pendingReferrals,
         nextAppointments: next.map(toAdminAppointment),
+        clickAnalytics: {
+          callTotal: clickTotalFor("call"),
+          whatsappTotal: clickTotalFor("whatsapp"),
+          topPages: topClickPages.map(
+            (item: {
+              _id: string;
+              callClicks: number;
+              whatsappClicks: number;
+              totalClicks: number;
+            }) => ({
+              page: item._id,
+              callClicks: item.callClicks,
+              whatsappClicks: item.whatsappClicks,
+              totalClicks: item.totalClicks,
+            }),
+          ),
+        },
       }),
     );
   } catch (error) {
