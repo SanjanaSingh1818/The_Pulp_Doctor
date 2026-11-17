@@ -284,7 +284,63 @@ function ClinicsSection({ locations, loading, error, retry }: { locations: Clini
 }
 
 function ContactSection() {
-  return <section id="contact" className="contact-premium section-pad"><div className="contact-inner"><div><Reveal><p className="eyebrow">GET IN TOUCH</p><h2 className="serif">Start with<br/><em>a conversation.</em></h2><p className="contact-intro">Have a question about your care? Reach the practice directly or send a general enquiry. For a confirmed appointment request, choose a clinic and available time on our booking page.</p><div className="mt-6 grid gap-3"><a className="contact-email" href="tel:+918448500405" onClick={()=>trackEngagementClick('call')}><span><strong>Call the practice</strong><small>+91 8448 500405</small></span><MoveUpRight size={16}/></a><a className="contact-email" href="mailto:care@thepulpdoctor.com"><span><strong>Email</strong><small>care@thepulpdoctor.com</small></span><MoveUpRight size={16}/></a><Link className="contact-email" href="/locations"><span><strong>Clinic locations</strong><small>View addresses and directions</small></span><MapPin size={16}/></Link></div><Link className="btn-primary mt-6" href="/book">Book an appointment <ArrowRight size={16}/></Link></Reveal></div><Reveal delay={100}><ContactForm/></Reveal></div></section>;
+  return (
+    <section id="contact" className="contact-premium section-pad">
+      <div className="contact-inner">
+        <div>
+          <Reveal>
+            <p className="eyebrow">GET IN TOUCH</p>
+            <h2 className="serif">
+              Start with
+              <br />
+              <em>a conversation.</em>
+            </h2>
+            <p className="contact-intro">
+              Have a question about your care? Reach the practice directly or
+              send a general enquiry. For a confirmed appointment request,
+              choose a clinic and available time on our booking page.
+            </p>
+            <div className="contact-links">
+              <a
+                className="contact-email"
+                href="tel:+918448500405"
+                onClick={() => trackEngagementClick("call")}
+              >
+                <span>
+                  <strong>Call the practice</strong>
+                  <small>+91 8448 500405</small>
+                </span>
+                <MoveUpRight size={16} aria-hidden="true" />
+              </a>
+              <a
+                className="contact-email"
+                href="mailto:care@thepulpdoctor.com"
+              >
+                <span>
+                  <strong>Email</strong>
+                  <small>care@thepulpdoctor.com</small>
+                </span>
+                <MoveUpRight size={16} aria-hidden="true" />
+              </a>
+              <Link className="contact-email" href="/locations">
+                <span>
+                  <strong>Clinic locations</strong>
+                  <small>View addresses and directions</small>
+                </span>
+                <MapPin size={16} aria-hidden="true" />
+              </Link>
+            </div>
+            <Link className="btn-primary mt-6" href="/book">
+              Book an appointment <ArrowRight size={16} />
+            </Link>
+          </Reveal>
+        </div>
+        <Reveal delay={100}>
+          <ContactForm />
+        </Reveal>
+      </div>
+    </section>
+  );
 }
 
 function PatientStoryPage({ slug }: { slug: string }) {
