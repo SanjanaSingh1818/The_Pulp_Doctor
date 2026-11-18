@@ -384,14 +384,12 @@ export function HeroSection() {
           <div className="hero-premium-decoration" aria-hidden="true" />
 
           <div className="hero-premium-experience">
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M7.5 3.5c-2.2 0-3.8 1.8-3.8 4.1 0 3.7 2.4 6.1 3.2 9.1.5 1.7.7 3.8 1.9 3.8 1.3 0 1.2-4.3 3.2-4.3s1.9 4.3 3.2 4.3c1.2 0 1.4-2.1 1.9-3.8.8-3 3.2-5.4 3.2-9.1 0-2.3-1.6-4.1-3.8-4.1-1.6 0-3 .8-4.5 2-1.5-1.2-2.9-2-4.5-2Z"
-                stroke="currentColor"
-                strokeWidth="1.4"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <img
+              className="hero-premium-tooth"
+              src={`${import.meta.env.BASE_URL}favicon.ico`}
+              alt=""
+              aria-hidden="true"
+            />
 
             <svg
               className="hero-premium-laurel"

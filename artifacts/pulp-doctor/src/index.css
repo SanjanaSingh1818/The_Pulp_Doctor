@@ -1174,6 +1174,13 @@ html { scroll-padding-top:5.5rem; }
   margin-bottom:2px;
   color:#89938b;
 }
+.hero-premium-experience .hero-premium-tooth {
+  display:block;
+  width:23px;
+  height:23px;
+  margin-bottom:2px;
+  object-fit:contain;
+}
 .hero-premium-experience strong {
   color:#126a68;
   font-family:var(--hero-font-serif);
